@@ -1,0 +1,122 @@
+/* Wrapper and container */
+.listing-status-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(43, 42, 42, 0.05);
+  border: 1px solid #d6d6d6;
+}
+
+.listing-status-container {
+  display: flex;
+  gap: .5rem;
+  min-width: 800px;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+@media (min-width: 920px) {
+  .listing-status-container {
+    display: flex;
+    
+    grid-template-columns: repeat(4, 2fr);
+    align-content: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    min-width: auto;
+   
+  };
+ 
+}
+
+/* Card row layout */
+.listing-status-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background-color: white;
+  border-radius: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  flex: 0 0 auto;
+  min-width: 200px;
+  
+  box-shadow: 0 2px 8px rgba(206, 206, 206, 0.05);
+  border: 1px solid #f0f0f0;
+}
+
+/* Icon */
+.card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+/* Text */
+.card-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 10px;
+  /* justify-content: center; */
+}
+
+.card-label {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 1px;
+  
+}
+
+.card-subtext {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 1px;
+}
+
+.card-price {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+/* Colors */
+.blue {
+  color: #2563eb;
+  /* background-color: #e0ecff; */
+}
+
+.yellow {
+  color: #f59e0b;
+  /* background-color: #fff7e6; */
+}
+
+.red {
+  color: #ef4444;
+  /* background-color: #ffe5e5; */
+}
+
+.green {
+  color: #22c55e;
+  /* background-color: #e6f9ef; */
+}
+
+.orange {
+  color: #f59e0b;
+  /* background-color: #fff2cc; */
+}
+
+/* inventory */
+
+.padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

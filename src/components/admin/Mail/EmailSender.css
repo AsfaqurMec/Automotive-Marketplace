@@ -1,0 +1,79 @@
+/* EmailSender.css */
+/* Basic editor styles */
+.ck-editor__editable {
+    min-height: 400px !important;
+    max-height: 600px !important;
+  }
+  
+  .ck-editor__editable_inline {
+    padding: 0 2rem !important;
+  }
+  
+  .ck.ck-editor {
+    width: 100% !important;
+  }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .ck.ck-editor__main > .ck-editor__editable,
+  [data-theme="dark"] .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+    background-color: #2b2b2b !important;
+    color: #ffffff !important;
+  }
+  
+  [data-theme="dark"] .ck.ck-toolbar {
+    background: #1e1e1e !important;
+    border-color: #404040 !important;
+  }
+  
+  [data-theme="dark"] .ck.ck-toolbar .ck-button {
+    color: #ffffff !important;
+  }
+  
+  [data-theme="dark"] .ck.ck-toolbar .ck-button:hover {
+    background: #404040 !important;
+  }
+  
+  [data-theme="dark"] .ck.ck-toolbar .ck-button.ck-on {
+    background: #404040 !important;
+    color: #ffffff !important;
+  }
+  
+  [data-theme="dark"] .ck.ck-editor__main > .ck-editor__editable {
+    border-color: #404040 !important;
+  }
+  
+  /* For Material-UI dark mode */
+  .MuiDialog-paper[data-mui-color-scheme="dark"] .ck.ck-editor__main > .ck-editor__editable,
+  .MuiDialog-paper[data-mui-color-scheme="dark"] .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+    background-color: #2b2b2b !important;
+    color: #ffffff !important;
+  }
+  
+  .MuiDialog-paper[data-mui-color-scheme="dark"] .ck.ck-toolbar {
+    background: #1e1e1e !important;
+    border-color: #404040 !important;
+  }
+  
+  .MuiDialog-paper[data-mui-color-scheme="dark"] .ck.ck-toolbar .ck-button {
+    color: #ffffff !important;
+  }
+  
+  /* Ensure text is always visible in editor */
+  .ck.ck-editor__editable {
+    color: #000000 !important; /* Default text color for light mode */
+  }
+  
+  .ck.ck-editor__editable[data-mui-color-scheme="dark"],
+  [data-mui-color-scheme="dark"] .ck.ck-editor__editable,
+  .dark-mode .ck.ck-editor__editable {
+    color: #ffffff !important;
+  }
+  
+  /* Links in editor */
+  .ck.ck-editor__editable a {
+    color: #1976d2 !important; /* Light mode link color */
+  }
+  
+  [data-mui-color-scheme="dark"] .ck.ck-editor__editable a {
+    color: #90caf9 !important; /* Dark mode link color */
+  }
