@@ -187,7 +187,7 @@ const AddVehicleForm: React.FC = () => {
   const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
   const router = useRouter();
   const { mutateAsync: createVehicale, isPending } = useMutation({
-    mutationFn: (data: Record<string, unknown>) => vehicaleApi.createVehicale(data as any, user as unknown as User),
+    mutationFn: (data: FormData) => vehicaleApi.createVehicale(data, user as unknown as User),
     onSuccess: () => {
       router.push('/admin/inventory');
       toast.success('Vehicle created successfully!');
@@ -393,7 +393,7 @@ const AddVehicleForm: React.FC = () => {
 
       // Submit the form data to your API
       //createVehicale(formData as any);
-      createVehicale(formData as unknown as Record<string, unknown>);
+      createVehicale(formData);
     },
   });
 
