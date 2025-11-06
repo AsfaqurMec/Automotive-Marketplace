@@ -48,7 +48,7 @@ const MyCarForm: React.FC = () => {
   const { mutateAsync: createVehicale } = useMutation({
     mutationFn: (data: CarFormData) => {
       if (!user) throw new Error('User not authenticated');
-      return vehicaleApi.createVehicale(data as unknown as Record<string, unknown>, user);
+      return vehicaleApi.createVehicale(data as unknown as FormData, user);
     },
     onSuccess: () => {
       toast.success('Vehicle created successfully!');
