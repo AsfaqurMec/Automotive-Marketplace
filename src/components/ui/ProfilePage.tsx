@@ -268,15 +268,16 @@ const ProfilePage: React.FC = () => {
       ? {
         _id: user?._id,
         fullName: formData.name,
-        phone: formData.phone || undefined,
-        companyName: formData.companyName || undefined,
-        contactPerson: formData.contactPerson || undefined,
+        email: formData.email,
+        phone: formData.phone || '',
+        companyName: formData.companyName || '',
+        contactPerson: formData.contactPerson || '',
         address: {
-          street: formData.address.street || undefined,
-          city: formData.address.city || undefined,
-          state: formData.address.state || undefined,
-          zipCode: formData.address.zipCode || undefined,
-          country: formData.address.country || undefined,
+          street: formData.address.street || '',
+          city: formData.address.city || '',
+          state: formData.address.state || '',
+          zipCode: formData.address.zipCode || '',
+          country: formData.address.country || '',
         },
       }
       : null;
@@ -297,6 +298,7 @@ const ProfilePage: React.FC = () => {
 
       // 2) Update profile image via auth API (multipart) if selected
       if (profileImage) {
+        
         await updateUser(imagePayload);
       }
 

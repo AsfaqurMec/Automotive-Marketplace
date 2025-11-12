@@ -29,6 +29,7 @@ import useAuth from '@/lib/hooks/useAuth';
 import Price from '@/components/ui/Price';
 
 type ViewMode = 'grid' | 'flex' | 'single';
+const ALLOWED_ROLES = new Set(['admin', 'superAdmin', 'dealer']);
 
 const ITEMS_PER_PAGE = 10;
 
@@ -40,8 +41,18 @@ const VehiclesScreen: React.FC = () => {
   const [displayedCount, setDisplayedCount] = useState<number>(ITEMS_PER_PAGE);
   const theme = useTheme();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isGettingLoggedIn } = useAuth();
+  const isAuthorized = user?.role?.roleId ? ALLOWED_ROLES.has(user.role.roleId) : false;
 
+  useEffect(() => {
+    if (!isGettingLoggedIn && user && !isAuthorized) {
+      router.replace('/');
+    }
+  }, [isAuthorized, isGettingLoggedIn, router, user]);
+
+  if (!isGettingLoggedIn && user && !isAuthorized) {
+    return null;
+  }
   const {
     data,
     isLoading,
@@ -388,10 +399,10 @@ const VehiclesScreen: React.FC = () => {
                         <Paper
                           elevation={0}
                           sx={{
-                            borderRadius: 3,
-                            overflow: 'hidden',
-                            border: `1px solid ${theme.palette.divider}`,
-                            background: theme.palette.background.paper,
+                             borderRadius: 3,
+                            // overflow: 'hidden',
+                            // border: `1px solid ${theme.palette.divider}`,
+                            // background: theme.palette.background.paper,
                             transition: 'all 0.2s ease-in-out',
                             height: '100%',
                             '&:hover': {

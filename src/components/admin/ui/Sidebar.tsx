@@ -39,9 +39,11 @@ import colors from '@/components/styles';
 import { usePathname, useRouter } from 'next/navigation';
 import usePermission from '@/lib/hooks/usePermission';
 import { useTranslation } from 'react-i18next';
+import useAuth from '@/lib/hooks/useAuth';
 
 const Sidebar: React.FC<{ isSidebarOpen: boolean, handleSidebarToggle: () => void }> = ({ isSidebarOpen, handleSidebarToggle }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [openMailing, setOpenMailing] = useState(false);
   const [openUser, setOpenUser] = useState(false);
   const hasPermission = usePermission();
@@ -86,6 +88,13 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean, handleSidebarToggle: () => voi
       key: 'dashboard',
     },
     {
+      label: t('vehicles'),
+      icon: <DirectionsCar />,
+      path: '/admin/vehicles',
+      key: 'vehicles',
+      public: true,
+    },
+    {
       label: t('inventory'),
       icon: <MdInventory2 />,
       path: '/admin/inventory',
@@ -104,7 +113,7 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean, handleSidebarToggle: () => voi
       path: '/admin/community',
       key: 'community',
     },
-    { label: t('ads'), icon: <MdCampaign />, path: '/admin/ads', key: 'ads' },
+    // { label: t('ads'), icon: <MdCampaign />, path: '/admin/ads', key: 'ads' },
     {
       label: t('dealersDirectory'),
       icon: <FaUserTie />,
@@ -112,26 +121,31 @@ const Sidebar: React.FC<{ isSidebarOpen: boolean, handleSidebarToggle: () => voi
       key: 'dealersDirectory',
       public: true,
     },
-    {
-      label: t('vehicles'),
-      icon: <DirectionsCar />,
-      path: '/admin/vehicles',
-      key: 'vehicles',
-      public: true,
-    },
+    
     {
       label: t('planBilling'),
       icon: <MdSettingsApplications />,
       path: '/admin/plan-billing',
       key: 'planBilling',
     },
-    {
-      label: t('subscriptionManage'),
-      icon: <MdCreditCard />,
-      path: '/admin/manage-subscription',
-      key: 'subscriptionManage',
-    },
+    
+    // {
+    //   label: t('subscriptionManage'),
+    //   icon: <MdCreditCard />,
+    //   path: '/admin/manage-subscription',
+    //   key: 'subscriptionManage',
+    // },
   ];
+
+  // ✅ Add this conditionally
+if (user?.role?.roleId === 'admin' || user?.role?.roleId === 'superAdmin') {
+  navItems.push({
+    label: t('subscriptionManage'),
+    icon: <MdCreditCard />,
+    path: '/admin/manage-subscription',
+    key: 'subscriptionManage',
+  });
+}
 
   const mailingSubItems = [
     {

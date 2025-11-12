@@ -70,15 +70,7 @@ const CarCard: React.FC<CarCardProps> = React.memo(({
         flexDirection: 'column',
       }}
     >
-      {/* Action buttons row - Favorite and Share */}
-      <Box display="flex" justifyContent="start" p={1}>
-        <IconButton>
-          <FavoriteBorderIcon />
-        </IconButton>
-        <IconButton>
-          <ShareIcon />
-        </IconButton>
-      </Box>
+     
 
       {/* Vehicle image */}
       <Box
@@ -87,6 +79,16 @@ const CarCard: React.FC<CarCardProps> = React.memo(({
         alt="Mercedes-Benz GLA"
         sx={{ width: '100%', borderRadius: 2, maxHeight: '190px' }}
       />
+
+       {/* Action buttons row - Favorite and Share */}
+       <Box display="flex" justifyContent="end" p={1}>
+        <IconButton>
+          <FavoriteBorderIcon />
+        </IconButton>
+        <IconButton>
+          <ShareIcon />
+        </IconButton>
+      </Box>
 
       {/* Vehicle information content */}
       <CardContent>

@@ -113,6 +113,7 @@ const CrmList: React.FC = () => {
   }, [data, leadsData]);
 
 //console.log(leads);
+//console.log(dealer);
 
   const filteredLeads = (leads || []).filter((lead) => {
     const userId = (user as User)?._id;

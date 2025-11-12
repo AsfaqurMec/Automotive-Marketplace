@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
             justifyContent={{ xs: 'center', md: 'flex-start' }}
           >
             <PhoneIcon fontSize="small" />
-            <Typography variant="body2">(456) 505-3120</Typography>
+            <Typography variant="body2">0195-623-0265</Typography>
           </Box>
           <Box
             display="flex"
@@ -83,7 +83,7 @@ const Footer: React.FC = () => {
             justifyContent={{ xs: 'center', md: 'flex-start' }}
           >
             <EmailIcon fontSize="small" />
-            <Typography variant="body2">nextdeal789@gmail.com</Typography>
+            <Typography variant="body2">nextdeal@gmail.com</Typography>
           </Box>
           <Box
             display="flex"
@@ -93,7 +93,7 @@ const Footer: React.FC = () => {
           >
             <LocationOnIcon fontSize="small" />
             <Typography variant="body2">
-                            9022 Heatherridge St, Santa Ana, Illinois 85486
+                            12/A Motijheel, Dhaka-1200
             </Typography>
           </Box>
         </Box>
@@ -187,7 +187,7 @@ const Footer: React.FC = () => {
             opacity: '56%',
           }}
         >
-                    &copy; 2024 NextDeal | {t('poweredBy', { provider: 'NextStar' })}
+                    &copy; 2025 NextDeal | {t('poweredBy', { provider: 'NextStar' })}
         </Typography>
       </Box>
     </Box>

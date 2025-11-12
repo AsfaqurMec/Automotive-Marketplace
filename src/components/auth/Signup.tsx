@@ -298,7 +298,7 @@ const SignupPage = ({ type }: { type: string }) => {
           <SuccessMessage message={successMessage || ''} />
           <Divider sx={{ my: 2 }}>{t('or')}</Divider>
 
-          <ContinueWithGoogleButton />
+          {/* <ContinueWithGoogleButton /> */}
 
           <Typography align="center" sx={{ color: textBlack }}>
             {t('haveAccount')}{' '}

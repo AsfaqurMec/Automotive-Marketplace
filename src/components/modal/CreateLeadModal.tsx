@@ -41,7 +41,7 @@ interface LeadFormValues {
 
 interface DealerData {
   _id: string;
-  companyName: string;
+  fullName: string;
   [key: string]: unknown;
 }
 
@@ -210,7 +210,7 @@ const CreateLeadModal = ({ open, onClose, onSubmit, dealer }: { open: boolean, o
                         setFieldValue('assignedTo', dealerId);
                       }}
                       onBlur={handleBlur}
-                      getOptionLabel={(option: DealerData) => option.companyName || ''}
+                      getOptionLabel={(option: DealerData) => `${option.fullName || 'N/A'} - ${option.companyName || 'N/A'}`}
                       renderInput={(params) => (
                         <TextField
                           {...params}

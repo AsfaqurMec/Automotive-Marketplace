@@ -639,7 +639,7 @@ const UserSubscriptionManage: React.FC = () => {
     const price = selectedPlan?.price as number;
     const planName = encodeURIComponent(selectedPlan?.planName as string); // optional
 
-    await addSubscription({ userId });
+    await addSubscription({ userId, subscriptionId: selectedPlan?._id as string });
     queryClient.invalidateQueries({ queryKey: ['subscription'] });
 
     const redirectUrl = `https://secure.2checkout.com/checkout/purchase?sid=255627191290&mode=2CO&li_0_type=product&li_0_name=${planName}&li_0_price=${price}`;

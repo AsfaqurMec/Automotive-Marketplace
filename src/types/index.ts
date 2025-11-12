@@ -100,7 +100,7 @@ export interface AuthState {
   setIsLoading: (val: boolean) => void;
   setUser: (user: User | null) => void;
   updateUser: (userUpdate: Partial<User>) => void;
-  login: (user: User, token: string) => void;
+  login: (user: User, token?: string) => void;
   userStatus: () => void;
   logout: () => void;
 }
@@ -612,6 +612,7 @@ export interface Subscription {
   durationDays: number;
   description: string;
   notes: string;
+  subscriptionId: string;
 }
 
 // Utility Types

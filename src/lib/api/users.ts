@@ -34,7 +34,7 @@ export const deleteCustomer = async (id: string, user: User) => {
 };
 
 export const updateDealer = async ({ data, user }: { data: Record<string, unknown>; user: User }) => {
-  authorize(user, 'users', 'manage');
+  //authorize(user, 'users', 'manage');
 
   return usersInstance.put(`/dealer/${data._id}`, data);
 };

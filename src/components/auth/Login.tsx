@@ -49,7 +49,7 @@ interface LoginResponse {
 const LoginPage: React.FC = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { setUser, userStatus } = useAuth();
+  const { login: loginUser, userStatus } = useAuth();
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [showPassword, setShowPassword] = React.useState(false);
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -82,7 +82,9 @@ const LoginPage: React.FC = () => {
         sessionStorage.setItem('fromLogin', 'false');
       }
       sessionStorage.setItem('user-status', 'true');
-      setUser(data?.data as User);
+      if (data?.data) {
+        loginUser(data.data as User, data?.token as string | undefined);
+      }
 
       // Refetch the auth status manually
       await queryClient.invalidateQueries({ queryKey: ['authStatus'] });
@@ -92,8 +94,8 @@ const LoginPage: React.FC = () => {
 
     onError: (error: { response?: { data?: { message?: string } } }) => {
       const message = error?.response?.data?.message || 'Something went wrong';
-      setErrorMessage(message);
-      // toast.error(message);
+     // setErrorMessage(message);
+       toast.error("Invalid email or password");
     },
   });
   const formik = useFormik({
@@ -297,7 +299,7 @@ const LoginPage: React.FC = () => {
         </form>
         <Error message={errorMessage} mt={2} />
 
-        <ContinueWithGoogleButton />
+        {/* <ContinueWithGoogleButton /> */}
       </Box>
     </>
   );

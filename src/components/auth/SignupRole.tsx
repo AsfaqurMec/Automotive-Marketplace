@@ -17,24 +17,24 @@ interface Option {
 }
 
 const options: Option[] = [
-  {
-    id: 'dealer',
-    label: 'customer',
-    signUpTitle: 'createNewAccount',
-    image: customerImage?.src,
-  },
+  // {
+  //   id: 'dealer',
+  //   label: 'customer',
+  //   signUpTitle: 'createNewAccount',
+  //   image: customerImage?.src,
+  // },
   {
     id: 'dealer',
     label: 'dealer',
     signUpTitle: 'dealerNewAccount',
     image: DealerImage?.src,
   },
-  {
-    id: 'dealer',
-    label: 'agency',
-    signUpTitle: 'agentNewAccount',
-    image: DealerImage?.src,
-  },
+  // {
+  //   id: 'dealer',
+  //   label: 'agency',
+  //   signUpTitle: 'agentNewAccount',
+  //   image: DealerImage?.src,
+  // },
 ];
 
 const PurposeSelection: React.FC = () => {

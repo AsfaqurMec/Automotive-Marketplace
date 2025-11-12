@@ -216,7 +216,7 @@ const CRMTable: React.FC<CRMTableProps> = ({ leads, setOpen, loading = false }) 
                     </Box>
                   </TableCell>
                 ))}
-                {!isMobile && (
+                {/* {!isMobile && (
                   <>
                     <TableCell>
                       <Box sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
@@ -234,7 +234,7 @@ const CRMTable: React.FC<CRMTableProps> = ({ leads, setOpen, loading = false }) 
                       </Box>
                     </TableCell>
                   </>
-                )}
+                )} */}
                 <TableCell align="center">
                   <Box sx={{ whiteSpace: 'nowrap' }}>{t('actions')}</Box>
                 </TableCell>
@@ -289,7 +289,7 @@ const CRMTable: React.FC<CRMTableProps> = ({ leads, setOpen, loading = false }) 
                     <TableCell>{row.phone}</TableCell>
                     <TableCell>{row.interestedIn}</TableCell>
                     <TableCell sx={{ minWidth: 150, whiteSpace: 'nowrap' }}>
-                      ₪{row.budget || 0}
+                      {row.budget || 0}
                     </TableCell>
                     <TableCell>
                       <Chip
@@ -306,12 +306,12 @@ const CRMTable: React.FC<CRMTableProps> = ({ leads, setOpen, loading = false }) 
                         : t('na')}
                     </TableCell>
                     <TableCell>{row.task}</TableCell>
-                    {!isMobile && (
+                    {/* {!isMobile && (
                       <>
                         <TableCell>{row.googleCalendarSyncStatus}</TableCell>
                         <TableCell>{row.trackingInfo}</TableCell>
                       </>
-                    )}
+                    )} */}
                     <TableCell align="center">
                       <Box display="flex" gap={1} justifyContent="center">
                         <IconButton
