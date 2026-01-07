@@ -44,9 +44,8 @@ import {
   Info as InfoIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import CheckoutForm from '@/components/ui/CheckoutForm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { addSubscription, getSubscriptions } from '@/lib/api/subscription';
+import { getSubscriptions } from '@/lib/api/subscription';
 import useAuth from '@/lib/hooks/useAuth';
 import { Subscription } from '@/types';
 
@@ -87,6 +86,7 @@ function SubscriptionPlansViewer({
   openModal,
   handleCloseModal,
   handlePay,
+  isProcessingPayment,
 }: {
     plans: Subscription[];
     onSelectPlan: (planId: string) => void;
@@ -94,6 +94,7 @@ function SubscriptionPlansViewer({
     openModal: boolean;
     handleCloseModal: () => void;
     handlePay: () => void;
+    isProcessingPayment?: boolean;
 }) {
   const { t } = useTranslation();
 
@@ -337,11 +338,11 @@ function SubscriptionPlansViewer({
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseModal} variant="outlined">
+          <Button onClick={handleCloseModal} variant="outlined" disabled={isProcessingPayment}>
             {t('cancel')}
           </Button>
-          <Button onClick={handlePay} variant="contained">
-            {t('pay')}
+          <Button onClick={handlePay} variant="contained" disabled={isProcessingPayment}>
+            {isProcessingPayment ? (t('processing') || 'Processing...') : t('pay')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -467,134 +468,126 @@ function CardActionsMenu({ card, onSetDefault, onRemove }: { card: PaymentMethod
 
 function UserPaymentDetails() {
   const { t } = useTranslation();
-  const [cards, setCards] = useState(initialUserCards);
-  const [openAddCard, setOpenAddCard] = useState(false);
 
-  const handleSetDefault = (cardId: string) => {
-    setCards((prevCards) =>
-      prevCards.map((card) => ({ ...card, isDefault: card.id === cardId })),
-    );
-  };
+  // Commented out existing payment methods management UI
+  // const [cards, setCards] = useState(initialUserCards);
+  // const [openAddCard, setOpenAddCard] = useState(false);
 
-  const handleRemoveCard = (cardId: string) => {
-    setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
-  };
+  // const handleSetDefault = (cardId: string) => {
+  //   setCards((prevCards) =>
+  //     prevCards.map((card) => ({ ...card, isDefault: card.id === cardId })),
+  //   );
+  // };
+
+  // const handleRemoveCard = (cardId: string) => {
+  //   setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
+  // };
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-      <Stack
-        direction={{ xs: 'column', sm: 'column', md: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', md: 'center' }}
-        spacing={2}
-        mb={3}
-      >
-        <Typography variant="h4" fontWeight={600}>
-          {t('paymentMethods')}
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddCardIcon />}
-          onClick={() => setOpenAddCard(true)}
-        >
-          {t('addNewCard')}
-        </Button>
-        <CheckoutForm></CheckoutForm>
-      </Stack>
-      <Stack spacing={2}>
-        {cards.length > 0 ? (
-          cards.map((card) => (
-            <Paper
-              key={card.id}
-              elevation={2}
-              sx={{
-                p: 2,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderRadius: 2,
-              }}
-            >
+      <Typography variant="h4" gutterBottom align="center" fontWeight={600} sx={{ mb: 4 }}>
+        {t('paymentDetails') || 'Payment Details'}
+      </Typography>
+
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Stack spacing={3}>
+          <Box>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+              Payment Information
+            </Typography>
+            <Typography variant="body1" color="text.secondary" paragraph>
+              We use SSLCommerz as our secure payment gateway provider. All transactions are processed securely and encrypted.
+            </Typography>
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+              Accepted Payment Methods
+            </Typography>
+            <Stack spacing={2}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <CreditCardIcon sx={{ fontSize: 40 }} color="primary" />
-                <Box>
-                  <Typography variant="h6">
-                    {card.brand} &bull; &bull; &bull; &bull; {card.last4}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    {t('expires')} {card.expiry}
-                  </Typography>
-                </Box>
-                {card.isDefault && (
-                  <Chip
-                    label={t('default')}
-                    color="success"
-                    size="small"
-                    sx={{ fontWeight: 'bold' }}
-                  />
-                )}
+                <CreditCardIcon color="primary" />
+                <Typography variant="body1">Credit Cards (Visa, Mastercard, American Express)</Typography>
               </Box>
-              <CardActionsMenu
-                card={card}
-                onSetDefault={handleSetDefault}
-                onRemove={handleRemoveCard}
-              />
-            </Paper>
-          ))
-        ) : (
-          <Paper
-            sx={{
-              textAlign: 'center',
-              p: 4,
-              border: '2px dashed',
-              borderColor: 'grey.300',
-              borderRadius: 2,
-            }}
-          >
-            <AddCardIcon color="action" sx={{ fontSize: 50, mb: 2 }} />
-            <Typography variant="h6">{t('noPaymentMethodsFound')}</Typography>
-            <Typography color="text.secondary">{t('addCardToGetStarted')}</Typography>
-          </Paper>
-        )}
-      </Stack>
-      <Dialog open={openAddCard} onClose={() => setOpenAddCard(false)}>
-        <DialogTitle fontWeight="bold">{t('addANewCard')}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t('cardNumber')}
-            type="text"
-            fullWidth
-            variant="outlined"
-          />
-          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <TextField
-              margin="dense"
-              label={t('expiryDate')}
-              type="text"
-              fullWidth
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <CreditCardIcon color="primary" />
+                <Typography variant="body1">Debit Cards</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <CreditCardIcon color="primary" />
+                <Typography variant="body1">Mobile Banking (bKash, Nagad, Rocket)</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <CreditCardIcon color="primary" />
+                <Typography variant="body1">Bank Transfer</Typography>
+              </Box>
+            </Stack>
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+              Payment Process
+            </Typography>
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <CheckCircleIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary="Select your subscription plan from the Available Plans tab" />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <CheckCircleIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary="Click 'Pay' to proceed to the secure payment gateway" />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <CheckCircleIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary="Complete payment using your preferred payment method" />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <CheckCircleIcon color="success" />
+                </ListItemIcon>
+                <ListItemText primary="You will be redirected back after successful payment" />
+              </ListItem>
+            </List>
+          </Box>
+
+          <Divider />
+
+          <Box>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+              Security & Privacy
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Your payment information is securely processed by SSLCommerz. We do not store your card details or sensitive payment information on our servers. All transactions are encrypted and comply with international security standards.
+            </Typography>
+          </Box>
+
+          <Box sx={{ mt: 2 }}>
+            <Button
               variant="outlined"
-            />
-            <TextField
-              margin="dense"
-              label={t('cvc')}
-              type="text"
-              fullWidth
-              variant="outlined"
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: '0 24px 16px' }}>
-          <Button onClick={() => setOpenAddCard(false)}>{t('cancel')}</Button>
-          <Button onClick={() => setOpenAddCard(false)} variant="contained">
-            {t('addCard')}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              startIcon={<InfoIcon />}
+              onClick={() => window.open('https://www.sslcommerz.com', '_blank')}
+            >
+              Learn more about SSLCommerz
+            </Button>
+          </Box>
+        </Stack>
+      </Paper>
     </Box>
   );
 }
+
+// USD to BDT conversion rate
+const USD_TO_BDT_RATE = 110;
 
 // --- Main Page ---
 const UserSubscriptionManage: React.FC = () => {
@@ -602,6 +595,7 @@ const UserSubscriptionManage: React.FC = () => {
   const [tabValue, setTabValue] = useState<number>(0);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Subscription | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
@@ -633,19 +627,58 @@ const UserSubscriptionManage: React.FC = () => {
   };
 
   const handlePay = async () => {
-    if (!selectedPlan) return;
-    const userId = user?._id as string;
+    if (!selectedPlan || !user) return;
 
-    const price = selectedPlan?.price as number;
-    const planName = encodeURIComponent(selectedPlan?.planName as string); // optional
+    setIsProcessingPayment(true);
+    try {
+      const userId = user._id as string;
+      const priceUSD = selectedPlan.price as number;
+      const planName = selectedPlan.planName as string;
 
-    await addSubscription({ userId, subscriptionId: selectedPlan?._id as string });
-    queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      // Convert USD to BDT
+      const amountBDT = priceUSD * USD_TO_BDT_RATE;
 
-    const redirectUrl = `https://secure.2checkout.com/checkout/purchase?sid=255627191290&mode=2CO&li_0_type=product&li_0_name=${planName}&li_0_price=${price}`;
+      // Get contact information (phone or email)
+      const contact = user.phone?.trim() || user.email?.trim() || '';
 
-    window.location.href = redirectUrl;
-    handleCloseModal();
+      if (!contact) {
+        alert('Contact information (phone or email) is required for payment');
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Prepare payload for payment API
+      const payload = {
+        purpose: planName,
+        contact: contact,
+        amount: amountBDT,
+        purposeLabel: planName,
+      };
+
+      // Call payment API
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+      const response = await fetch(`${apiBaseUrl}/payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (result.data?.url) {
+        // Redirect to SSLCommerz payment gateway
+        // Subscription will be updated by backend after payment confirmation
+        window.location.replace(result.data.url);
+        handleCloseModal();
+      } else {
+        throw new Error('Payment URL not received');
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      alert('Failed to process payment. Please try again.');
+      setIsProcessingPayment(false);
+    }
   };
 
   return (
@@ -676,6 +709,7 @@ const UserSubscriptionManage: React.FC = () => {
             selectedPlan={selectedPlan}
             handleCloseModal={handleCloseModal}
             handlePay={handlePay}
+            isProcessingPayment={isProcessingPayment}
           />
         </TabPanel>
         <TabPanel value={tabValue} index={1}>

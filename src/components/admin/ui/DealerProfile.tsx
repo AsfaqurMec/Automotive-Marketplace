@@ -22,6 +22,7 @@ import {
 import { Business, Email, Phone, LocationOn, VerifiedUser, Star } from '@mui/icons-material';
 import { getDealerById } from '@/lib/api/dealer';
 import { Dealer } from '@/types';
+import Link from 'next/link';
 
 interface DealerProfileProps {
   dealerId: string;
@@ -96,14 +97,14 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
         <CardHeader
           avatar={
             <Avatar
-              src={dealer.logo || ''}
+              src={dealer.profileImage || ''}
               alt={`${dealer.companyName} Logo`}
               sx={{ width: 80, height: 80 }}
             />
           }
           title={
             <Typography variant="h4" component="div">
-              {dealer.companyName}
+              {dealer.fullName} - {dealer.companyName}
             </Typography>
           }
           subheader={`Member since: ${dealer.createdAt ? new Date(dealer.createdAt).toLocaleDateString() : 'N/A'}`}
@@ -286,18 +287,21 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
             p: 2,
             pt: 0,
             display: 'flex',
-            justifyContent: 'flex-end',
+            width: '100%',
+            justifyContent: 'flex-center',
+            alignItems: 'center',
           }}
         >
+          <Link href={`/cars/${car._id}`} style={{ textDecoration: 'none', width: '100%', paddingTop: '10px' }}>
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
             color="primary"
-            href={`/cars/${car._id}`}
-            sx={{ borderRadius: 2 }}
+            sx={{ borderRadius: 2, width: '100%' }}
           >
             View Details
           </Button>
+          </Link>
         </Box>
       </Card>
     </Grid>

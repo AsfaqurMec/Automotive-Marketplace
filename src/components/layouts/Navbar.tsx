@@ -803,7 +803,7 @@ function ResponsiveAppBar(): React.JSX.Element {
   const settings: Setting[] = [];
 
   if (user && user.authenticated !== false) {
-    settings.push({ label: t('home'), path: '/' }, { label: t('profile'), path: '/profile' });
+    settings.push({ label: t('Home'), path: '/admin/dashboard' }, { label: t('My profile'), path: `/admin/dealer/${user?._id}` }, { label: t('Shared profile'), path: `/profile` });
 
     if (can('adminPanel', 'access')) {
       settings.push({ label: t('adminPanel'), path: '/admin/dashboard' });
@@ -833,7 +833,7 @@ function ResponsiveAppBar(): React.JSX.Element {
           zIndex: 105,
         }}
       >
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" sx={{ borderBottom: '1px solid #E0E0E0' }}>
           <Toolbar disableGutters sx={{ display: 'flex' }}>
             <Box
               sx={{

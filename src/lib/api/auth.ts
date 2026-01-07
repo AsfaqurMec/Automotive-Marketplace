@@ -37,6 +37,9 @@ const authInstances = axios.create({
   withCredentials: true, // Include cookies in requests
 });
 
+const isFormData = (value: unknown): value is FormData =>
+  typeof FormData !== 'undefined' && value instanceof FormData;
+
 /**
  * Get current user information
  * @returns {Promise<Object>} User data or authentication status
@@ -68,7 +71,29 @@ export const getLogin = (data: object): Promise<object> => {
  * @param {Object} data - Registration data (name, email, password, etc.)
  * @returns {Promise<Object>} Registration response
  */
-export const signup = (data: object): Promise<object> => {
+export const signup = (data: Record<string, unknown> | FormData): Promise<object> => {
+  if (isFormData(data)) {
+    console.log('📤 Sending FormData (multipart/form-data) to /register');
+    // Log FormData contents
+    const formDataEntries: Record<string, unknown> = {};
+    for (const [key, value] of data.entries()) {
+      if (value instanceof File) {
+        formDataEntries[key] = {
+          type: 'File',
+          name: value.name,
+          size: value.size,
+          mimeType: value.type,
+        };
+      } else {
+        formDataEntries[key] = value;
+      }
+    }
+    console.log('📋 FormData contents:', formDataEntries);
+    console.log('⚠️  Backend needs multer middleware to parse multipart/form-data');
+    console.log('⚠️  Text fields will be in req.body, files in req.files');
+    return authInstances.post('/register', data);
+  }
+  console.log('📤 Sending JSON data to /register:', data);
   return authInstance.post('/register', data);
 };
 

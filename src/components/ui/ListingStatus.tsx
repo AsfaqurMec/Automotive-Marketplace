@@ -142,7 +142,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <FaCheckCircle />
           </div>
           <div className="card-content">
-            <p className="card-label">{t('soldAllFees')}</p>
+            <p className="card-label">{t('sold')}</p>
             <p className="card-subtext">0 {t('listings')}</p>
             <p className="card-price green">₪0</p>
           </div>
@@ -153,7 +153,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <FaCheckCircle />
           </div>
           <div className="card-content">
-            <p className="card-label">{t('soldSellerFee')}</p>
+            <p className="card-label">{t('sold internal buyer')}</p>
             <p className="card-subtext">0 {t('listings')}</p>
             <p className="card-price green">₪0</p>
           </div>
@@ -164,13 +164,13 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <FaCheckCircle />
           </div>
           <div className="card-content">
-            <p className="card-label">{t('soldBuyerFee')}</p>
+            <p className="card-label">{t('sold external buyer')}</p>
             <p className="card-subtext">0 {t('listings')}</p>
             <p className="card-price green">₪0</p>
           </div>
         </div>
 
-        <div className="listing-status-card">
+        {/* <div className="listing-status-card">
           <div className="card-icon orange">
             <FaCheckCircle />
           </div>
@@ -179,7 +179,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <p className="card-subtext">0 {t('listings')}</p>
             <p className="card-price orange">₪0</p>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

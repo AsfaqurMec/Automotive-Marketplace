@@ -32,6 +32,8 @@ import {
   MdCampaign,
   MdSettingsApplications,
   MdCreditCard,
+  MdPersonAdd,
+  MdSell,
 } from 'react-icons/md';
 import usePermission from '@/lib/hooks/usePermission';
 import { useTranslation } from 'react-i18next';
@@ -80,54 +82,61 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ open, onClose }) => {
   const navItems = [
     {
       label: t('dashboard'),
-      icon: <FaTachometerAlt />,
+      icon: <FaTachometerAlt size={24} />,
       path: '/admin/dashboard',
       key: 'dashboard',
     },
     {
       label: t('vehicles'),
-      icon: <DirectionsCar />,
+      icon: <DirectionsCar fontSize="inherit" style={{ fontSize: 24 }} />,
       path: '/admin/vehicles',
       key: 'vehicles',
       public: true,
     },
     {
       label: t('inventory'),
-      icon: <MdInventory2 />,
+      icon: <MdInventory2 size={24} />,
       path: '/admin/inventory',
       key: 'inventory',
     },
     {
       label: t('hotProducts'),
-      icon: <MdWhatshot />,
+      icon: <MdWhatshot size={24} />,
       path: '/admin/product-list',
       key: 'hotProducts',
     },
-    { label: t('crm'), icon: <MdManageAccounts />, path: '/admin/crm', key: 'crm' },
+    { label: t('crm'), icon: <MdManageAccounts size={24} />, path: '/admin/crm', key: 'crm' },
     {
       label: t('community'),
-      icon: <RiUserSharedLine />,
+      icon: <RiUserSharedLine size={24} />,
       path: '/admin/community',
       key: 'community',
     },
-    //{ label: t('ads'), icon: <MdCampaign />, path: '/admin/ads', key: 'ads' },
+    //{ label: t('ads'), icon: <MdCampaign size={24} />, path: '/admin/ads', key: 'ads' },
     {
       label: t('dealersDirectory'),
-      icon: <FaUserTie />,
+      icon: <FaUserTie size={24} />,
       path: '/admin/dealers',
       key: 'dealersDirectory',
+      public: true,
+    },
+    {
+      label: t('dealerRequests') || 'Dealer Requests',
+      icon: <MdPersonAdd size={24} />,
+      path: '/admin/dealer-request',
+      key: 'dealerRequests',
       public: true,
     },
     
     {
       label: t('planBilling'),
-      icon: <MdSettingsApplications />,
+      icon: <MdSettingsApplications size={24} />,
       path: '/admin/plan-billing',
       key: 'planBilling',
     },
     // {
     //   label: t('subscriptionManage'),
-    //   icon: <MdCreditCard />,
+    //   icon: <MdCreditCard size={24} />,
     //   path: '/admin/manage-subscription',
     //   key: 'subscriptionManage',
     // },
@@ -138,22 +147,32 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ open, onClose }) => {
 if (user?.role?.roleId === 'admin' || user?.role?.roleId === 'superAdmin') {
   navItems.push({
     label: t('subscriptionManage'),
-    icon: <MdCreditCard />,
+    icon: <MdCreditCard size={24} />,
     path: '/admin/manage-subscription',
     key: 'subscriptionManage',
+    public: true, // Admin only, bypass permission check
+  });
+  
+  // Add Sold Vehicles menu item (admin only)
+  navItems.push({
+    label: t('soldVehicles') || 'Sold Vehicles',
+    icon: <MdSell size={24} />,
+    path: '/admin/sold-vehicles',
+    key: 'soldVehicles',
+    public: true, // Admin only, bypass permission check
   });
 }
 
   const mailingSubItems = [
     {
       label: t('importCustomers'),
-      icon: <GroupAddOutlined fontSize="small" />,
+      icon: <GroupAddOutlined fontSize="inherit" style={{ fontSize: 24 }} />,
       path: '/admin/mailing/import',
       key: 'importCustomers',
     },
     {
       label: t('matching'),
-      icon: <ImportExport fontSize="small" />,
+      icon: <ImportExport fontSize="inherit" style={{ fontSize: 24 }} />,
       path: '/admin/mailing/matching',
       key: 'matching',
     },
@@ -163,11 +182,11 @@ if (user?.role?.roleId === 'admin' || user?.role?.roleId === 'superAdmin') {
   const UsersSubItems = [
     {
       label: t('customers'),
-      icon: <FaUser />,
+      icon: <FaUser size={24} />,
       path: '/admin/customers-list',
       key: 'customers',
     },
-    { label: t('dealer'), icon: <FaUserTie />, path: '/admin/dealers-list', key: 'dealer' },
+    { label: t('dealer'), icon: <FaUserTie size={24} />, path: '/admin/dealers-list', key: 'dealer' },
   ];
 
   const handleNavigate = (path: string) => {
@@ -223,10 +242,10 @@ if (user?.role?.roleId === 'admin' || user?.role?.roleId === 'superAdmin') {
             onClick={() => setOpenUser(!openUser)}
           >
             <ListItemIcon>
-              <PiUserListFill />
+              <PiUserListFill size={24} />
             </ListItemIcon>
             <ListItemText primary={t('user')} />
-            {openUser ? <ExpandLess /> : <ExpandMore />}
+            {openUser ? <ExpandLess fontSize="inherit" style={{ fontSize: 24 }} /> : <ExpandMore fontSize="inherit" style={{ fontSize: 24 }} />}
           </ListItemButton>
           <Collapse in={openUser} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
@@ -270,10 +289,10 @@ if (user?.role?.roleId === 'admin' || user?.role?.roleId === 'superAdmin') {
             onClick={() => setOpenMailing(!openMailing)}
           >
             <ListItemIcon>
-              <ChatBubbleOutline />
+              <ChatBubbleOutline fontSize="inherit" style={{ fontSize: 24 }} />
             </ListItemIcon>
             <ListItemText primary={t('whatsAppMailing')} />
-            {openMailing ? <ExpandLess /> : <ExpandMore />}
+            {openMailing ? <ExpandLess fontSize="inherit" style={{ fontSize: 24 }} /> : <ExpandMore fontSize="inherit" style={{ fontSize: 24 }} />}
           </ListItemButton>
           <Collapse in={openMailing} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>

@@ -1,5 +1,5 @@
 import React from 'react';
-import PurposeSelection from '@/components/auth/SignupRole';
+import SignupPage from '@/components/auth/Signup';
 import LeftSideScreen from '@/components/auth/LeftSideScreen';
 import { Box } from '@mui/material';
 import colors from '@/components/styles';
@@ -17,13 +17,13 @@ const SignupScreen: React.FC = () => {
         justifyContent: 'start',
         height: '100%',
         padding: '0px!important',
-        gap: 10,
+        gap: 0,
       }}
     >
-      <LeftSideScreen width={'52%'} />
+    {/*  <LeftSideScreen width={'52%'} /> */}
 
-      <Box sx={{ width: { xs: '100%', md: '100%', xl: '32%' }, backgroundColor: foreground }}>
-        <PurposeSelection />
+      <Box sx={{ width: '100%', backgroundColor: foreground }}>
+        <SignupPage type="dealer" />
       </Box>
     </Box>
   );

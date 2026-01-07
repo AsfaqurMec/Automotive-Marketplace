@@ -46,6 +46,9 @@ import ListingStatus from '@/components/ui/ListingStatus';
 import { safeLocalStorage } from '@/lib/utils/secureStorage';
 import { Vehicle, Garage, User } from '@/types';
 import Price from '@/components/ui/Price';
+import StatusChangeModal from '@/components/modal/StatusChangeModal';
+import SoldModal, { SoldData } from '@/components/modal/SoldModal';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 interface CarData {
   _id: string;
@@ -139,6 +142,9 @@ const InventoryComponent: React.FC = () => {
   const [openEditGarageModal, setOpeEditGarageModal] = useState(false);
   const [editGarageData] = useState<Garage[]>([]);
   const [openSparePartModal, setOpenSparePartModal] = useState(false);
+  const [openStatusChangeModal, setOpenStatusChangeModal] = useState(false);
+  const [openSoldModal, setOpenSoldModal] = useState(false);
+  const [selectedVehicleForStatus, setSelectedVehicleForStatus] = useState<Vehicle | null>(null);
   const queryClient = useQueryClient();
 
   const { data } = useQuery({
@@ -262,8 +268,85 @@ const InventoryComponent: React.FC = () => {
 
   const handleModalClose = () => {
     setOpenModal(false);
-
     setOpenUpdateModal(false);
+  };
+
+  const { mutate: updateStatusMutation } = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      vehicaleApi.updateVehicleStatus({ id, status, user: user as User }),
+    onSuccess: () => {
+      toast.success('Status updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['get-vehicale'] });
+      setSelectedVehicleForStatus(null);
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Failed to update status. Please try again.';
+      toast.error(message);
+    },
+  });
+
+  const { mutate: markAsSoldMutation, isPending: isMarkingSold } = useMutation({
+    mutationFn: ({ id, soldData }: { id: string; soldData: SoldData }) =>
+      vehicaleApi.markVehicleAsSold({ id, soldData: soldData as unknown as Record<string, unknown>, user: user as User }),
+    onSuccess: () => {
+      toast.success('Vehicle marked as sold successfully!');
+      queryClient.invalidateQueries({ queryKey: ['get-vehicale'] });
+      setOpenSoldModal(false);
+      setSelectedVehicleForStatus(null);
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Failed to mark vehicle as sold. Please try again.';
+      toast.error(message);
+    },
+  });
+
+  const handleStatusChangeClick = (item: Vehicle) => {
+    setSelectedVehicleForStatus(item);
+    setOpenStatusChangeModal(true);
+    handleMenuClose();
+  };
+
+  const handleStatusSelect = (status: string) => {
+    if (!selectedVehicleForStatus) return;
+
+    if (status === 'Sold') {
+      // Close status modal and open sold modal, keeping vehicle selected
+      setOpenStatusChangeModal(false);
+      // Small delay to ensure modal state updates properly
+      setTimeout(() => {
+        setOpenSoldModal(true);
+      }, 100);
+    } else {
+      // For non-Sold statuses, update and clear selection
+      updateStatusMutation({
+        id: selectedVehicleForStatus._id,
+        status,
+      });
+      setOpenStatusChangeModal(false);
+      setSelectedVehicleForStatus(null);
+    }
+  };
+
+  const handleSoldConfirm = (soldData: SoldData, vehicleId?: string) => {
+    console.log('handleSoldConfirm called', { soldData, selectedVehicleForStatus, vehicleId });
+    
+    // Get vehicle ID from selectedVehicleForStatus or from parameter
+    const id = selectedVehicleForStatus?._id || vehicleId;
+    
+    if (!id) {
+      toast.error('Vehicle not selected');
+      return;
+    }
+    
+    console.log('Calling markAsSoldMutation with vehicle ID:', id);
+    markAsSoldMutation({
+      id,
+      soldData,
+    });
   };
 
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
@@ -539,8 +622,11 @@ const InventoryComponent: React.FC = () => {
             <Table>
               <TableHead style={{ background: '#f3e5b6' }}>
                 <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell></TableCell>
+                <TableCell>Actions</TableCell>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Brand</TableCell>
+                  <TableCell>Model</TableCell>
+                  <TableCell>Image</TableCell>
 
                   <TableCell>{t('price')}</TableCell>
                   <TableCell>{t('status')}</TableCell>
@@ -601,6 +687,19 @@ const InventoryComponent: React.FC = () => {
 
                               <MenuItem
                                 onClick={() =>
+                                  handleStatusChangeClick(item)
+                                }
+                              >
+                                <ListItemIcon>
+                                  <SwapHorizIcon />
+                                </ListItemIcon>
+                                <ListItemText>
+                                  {t('changeStatus') || 'Change Status'}
+                                </ListItemText>
+                              </MenuItem>
+
+                              <MenuItem
+                                onClick={() =>
                                   handleDeleteClick(item?._id)
                                 }
                               >
@@ -631,6 +730,10 @@ const InventoryComponent: React.FC = () => {
                             </IconButton>
                           </TableCell>
 
+                          <TableCell>{item?.title}</TableCell>
+                          <TableCell>{item?.brand}</TableCell>
+                          <TableCell>{item?.model}</TableCell>
+
                           <TableCell>
                             <img
                               src={
@@ -638,8 +741,8 @@ const InventoryComponent: React.FC = () => {
                                                                 'https://via.placeholder.com/50'
                               }
                               alt="property"
-                              width={40}
-                              height={40}
+                              width={80}
+                              height={60}
                               style={{ borderRadius: 4 }}
                             />
                           </TableCell>
@@ -940,6 +1043,32 @@ const InventoryComponent: React.FC = () => {
           initialData={editGarageData as unknown as Garage}
         />
       )}
+
+      <StatusChangeModal
+        open={openStatusChangeModal}
+        onClose={() => {
+          setOpenStatusChangeModal(false);
+          // Only clear vehicle selection if sold modal is not opening
+          if (!openSoldModal) {
+            setSelectedVehicleForStatus(null);
+          }
+        }}
+        onStatusSelect={handleStatusSelect}
+      />
+
+      <SoldModal
+        open={openSoldModal}
+        onClose={() => {
+          if (!isMarkingSold) {
+            setOpenSoldModal(false);
+            setSelectedVehicleForStatus(null);
+          }
+        }}
+        onConfirm={(data, vehicleId) => handleSoldConfirm(data, vehicleId)}
+        vehicleId={selectedVehicleForStatus?._id || ''}
+        sellerId={user?._id || ''}
+        isLoading={isMarkingSold}
+      />
     </Box>
   );
 };

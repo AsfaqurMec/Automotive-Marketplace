@@ -22,7 +22,7 @@ const LeftSideScreen: React.FC<LeftSideScreenProps> = ({ width }) => {
     <Box
       sx={{
         width: width ? width : '100%',
-        minHeight: '1001px',
+        minHeight: '300px',
         background: '#FFFDF6',
         position: 'relative',
         overflow: 'hidden',

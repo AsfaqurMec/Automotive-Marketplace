@@ -61,7 +61,7 @@ const CarCard: React.FC<CarCardProps> = React.memo(({
         maxWidth: '100%',
         borderRadius: 3,
         boxShadow: 3,
-        padding: 2,
+        padding: 1,
         maxHeight: 597,
         mt: 2,
         background: bgColor,
@@ -77,7 +77,7 @@ const CarCard: React.FC<CarCardProps> = React.memo(({
         component="img"
         src={car?.media?.[0]?.url}
         alt="Mercedes-Benz GLA"
-        sx={{ width: '100%', borderRadius: 2, maxHeight: '190px' }}
+        sx={{ width: '100%', borderRadius: 2, height: '210px' }}
       />
 
        {/* Action buttons row - Favorite and Share */}
@@ -107,13 +107,13 @@ const CarCard: React.FC<CarCardProps> = React.memo(({
         </Typography>
 
         {/* Vehicle description */}
-        <Typography
+        {/* <Typography
           variant="body1"
           textAlign={'end'}
           sx={{ color: gray1, fontFamily: 'Rubik' }}
         >
           {car?.description}
-        </Typography>
+        </Typography> */}
 
         {/* Vehicle price */}
         <Typography variant="body1" fontWeight="bold" color={textBlack} mt={1}>

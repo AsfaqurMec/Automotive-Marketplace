@@ -206,6 +206,14 @@ const UpdateCarModal = ({ open, handleClose, carData, handleUpdate }: { open: bo
     }));
   };
 
+  const handleModelChange = (e: SelectChangeEvent<string>) => {
+    const newModel = e.target.value;
+    setFormData((prev: CarData) => ({
+      ...prev,
+      model: newModel,
+    }));
+  };
+
   const handleSubmit = () => {
     const formDataToSend = new FormData();
 
@@ -338,7 +346,7 @@ const UpdateCarModal = ({ open, handleClose, carData, handleUpdate }: { open: bo
               <Select
                 name="model"
                 value={formData.model || ''}
-                onChange={handleBrandChange}
+                onChange={handleModelChange}
               >
                 {brands[selectedBrand as keyof typeof brands]?.map((model: string) => (
                   <MenuItem key={model} value={model}>

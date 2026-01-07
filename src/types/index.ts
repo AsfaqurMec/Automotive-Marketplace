@@ -207,6 +207,7 @@ export interface Dealer {
   isBlocked?: boolean;
   contactPerson?: string;
   lastLogin?: string;
+  profileImage?: string;
 }
 
 export interface DealerFormData {

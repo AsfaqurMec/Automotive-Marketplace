@@ -356,201 +356,348 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#fdfdfd', minHeight: '100vh', py: 4 }}>
-      <Container maxWidth="lg">
+    <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh', py: { xs: 3, md: 4 } }}>
+      <Container maxWidth="md">
+        {/* Main Profile Card */}
         <Box
           sx={{
             bgcolor: 'white',
-            p: { xs: 2, sm: 4 },
             borderRadius: 2,
-            boxShadow: 2,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+            overflow: 'hidden',
           }}
         >
-          {/* Header */}
-          <Box textAlign="center" mb={3}>
-            <Typography variant="h3" fontWeight="bold">
-              {t('profileEdit')}
+          {/* Profile Picture Section - Centered at Top */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              pt: 4,
+              pb: 3,
+              px: 3,
+            }}
+          >
+            <Avatar
+              src={previewUrl}
+              sx={{
+                width: 120,
+                height: 120,
+                mb: 2,
+                border: '3px solid #f0f0f0',
+              }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleOpenImageDialog}
+              sx={{
+                bgcolor: '#c8a45e',
+                color: 'white',
+                textTransform: 'none',
+                px: 3,
+                py: 1,
+                borderRadius: 1,
+                mb: 1,
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                '&:hover': {
+                  bgcolor: '#b89049',
+                },
+              }}
+            >
+              {t('changePicture')}
+            </Button>
+            <Typography
+              variant="caption"
+              sx={{
+                color: '#6c757d',
+                fontSize: '0.75rem',
+                mt: 0.5,
+              }}
+            >
+              {t('profileImageSize')}
             </Typography>
           </Box>
 
-          {/* Buttons and Avatar */}
-          <Grid
-            container
-            spacing={3}
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ mb: 2 }}
-          >
-            <Grid item xs={12} md="auto">
-              <Box display="flex" gap={2}>
-                {/* UPDATED: open image dialog */}
-                <Button
-                  variant="contained"
-                  sx={{ bgcolor: 'black', '&:hover': { bgcolor: '#333' } }}
-                  onClick={handleOpenImageDialog}
-                >
-                  {t('changePicture')}
-                </Button>
-              </Box>
-            </Grid>
+          <Divider />
 
-            <Grid item xs={12} md="auto">
-              <Box textAlign="center">
-                {/* UPDATED: Avatar shows previewUrl */}
-                <Avatar
-                  src={previewUrl}
-                  sx={{ width: 80, height: 80, mx: 'auto', mb: 1 }}
+          {/* Form Content */}
+          <Box sx={{ p: { xs: 3, md: 4 } }}>
+            {/* Personal Information Section */}
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 600,
+                color: '#212529',
+                mb: 3,
+                fontSize: '1rem',
+              }}
+            >
+              Personal Information
+            </Typography>
+
+            <Grid container spacing={2.5}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label={t('profileName')}
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      fontSize: '0.875rem',
+                    },
+                  }}
                 />
-                <Typography variant="body2" fontWeight="medium">
-                  {t('profilePicture')}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {t('profileImageSize')}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
+              </Grid>
 
-          <Divider sx={{ my: 2 }} />
-
-          {/* Form Fields */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label={t('profileName')}
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label={t('profileEmail')}
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                InputProps={{ readOnly: true }}
-              />
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label={t('profileEmail')}
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  InputProps={{ readOnly: true }}
+                  size="small"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      fontSize: '0.875rem',
+                      bgcolor: '#f8f9fa',
+                      '& fieldset': {
+                        borderColor: '#e0e0e0',
+                      },
+                    },
+                  }}
+                />
+              </Grid>
             </Grid>
 
             {/* Dealer-specific fields */}
             {isDealer && (
               <>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label={t('companyName') || 'Company Name'}
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                  />
+                <Divider sx={{ my: 3 }} />
+
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    fontWeight: 600,
+                    color: '#212529',
+                    mb: 3,
+                    fontSize: '1rem',
+                  }}
+                >
+                  Company Information
+                </Typography>
+
+                <Grid container spacing={2.5}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={t('companyName') || 'Company Name'}
+                      name="companyName"
+                      value={formData.companyName}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={t('contactPerson') || 'Contact Person'}
+                      name="contactPerson"
+                      value={formData.contactPerson}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={t('phone') || 'Phone'}
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label={t('contactPerson') || 'Contact Person'}
-                    name="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleChange}
-                  />
-                </Grid>
+                <Divider sx={{ my: 3 }} />
 
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label={t('phone') || 'Phone'}
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </Grid>
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    fontWeight: 600,
+                    color: '#212529',
+                    mb: 3,
+                    fontSize: '1rem',
+                  }}
+                >
+                  Address Information
+                </Typography>
 
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label={t('street') || 'Street'}
-                    name="address.street"
-                    value={formData.address.street}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label={t('city') || 'City'}
-                    name="address.city"
-                    value={formData.address.city}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label={t('state') || 'State'}
-                    name="address.state"
-                    value={formData.address.state}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                  <TextField
-                    fullWidth
-                    label={t('zipCode') || 'Zip Code'}
-                    name="address.zipCode"
-                    value={formData.address.zipCode}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={3}>
-                  <TextField
-                    fullWidth
-                    label={t('country') || 'Country'}
-                    name="address.country"
-                    value={formData.address.country}
-                    onChange={handleChange}
-                  />
+                <Grid container spacing={2.5}>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label={t('street') || 'Street'}
+                      name="address.street"
+                      value={formData.address.street}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={t('city') || 'City'}
+                      name="address.city"
+                      value={formData.address.city}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={t('state') || 'State'}
+                      name="address.state"
+                      value={formData.address.state}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={t('zipCode') || 'Zip Code'}
+                      name="address.zipCode"
+                      value={formData.address.zipCode}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label={t('country') || 'Country'}
+                      name="address.country"
+                      value={formData.address.country}
+                      onChange={handleChange}
+                      size="small"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: '0.875rem',
+                        },
+                      }}
+                    />
+                  </Grid>
                 </Grid>
               </>
             )}
-          </Grid>
 
-          {/* Buttons */}
-          <Box mt={2} display="flex" flexDirection={'column-reverse'} gap={2}>
-            {/* UPDATED: Added onClick for save */}
-            <Button
-              variant="contained"
+            {/* Action Buttons */}
+            <Box
               sx={{
-                bgcolor: '#c8a45e',
-                '&:hover': { bgcolor: '#b89049' },
-                textTransform: 'none',
-                px: 4,
-                py: 1.5,
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: 2,
+                mt: 4,
+                pt: 3,
+                borderTop: '1px solid #e9ecef',
               }}
-              onClick={handleSaveChanges}
-              disabled={isLoading}
             >
-              {isLoading ? t('saving') : t('saveChanges')}
-            </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setIsPasswordDialogOpen(true)}
+                sx={{
+                  textTransform: 'none',
+                  px: 3,
+                  py: 1,
+                  borderRadius: 1,
+                  borderColor: '#c8a45e',
+                  color: '#c8a45e',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  '&:hover': {
+                    borderColor: '#b89049',
+                    bgcolor: 'rgba(200, 164, 94, 0.08)',
+                  },
+                }}
+              >
+                {t('changePassword')}
+              </Button>
 
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setIsPasswordDialogOpen(true)}
-              sx={{ px: 3, py: 1 }}
-              style={{
-                maxWidth: '200px',
-                fontSize: 16,
-                marginTop: 10,
-                marginBottom: 10,
-              }}
-            >
-              {t('changePassword')}
-            </Button>
+              <Button
+                variant="contained"
+                onClick={handleSaveChanges}
+                disabled={isLoading}
+                sx={{
+                  bgcolor: '#c8a45e',
+                  color: 'white',
+                  textTransform: 'none',
+                  px: 4,
+                  py: 1,
+                  borderRadius: 1,
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  '&:hover': {
+                    bgcolor: '#b89049',
+                  },
+                  '&:disabled': {
+                    bgcolor: '#c8a45e',
+                    opacity: 0.6,
+                  },
+                }}
+              >
+                {isLoading ? t('saving') : t('saveChanges')}
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Container>
@@ -560,10 +707,31 @@ const ProfilePage: React.FC = () => {
         open={isPasswordDialogOpen}
         onClose={() => setIsPasswordDialogOpen(false)}
         fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+          },
+        }}
       >
-        <DialogTitle>Change Password</DialogTitle>
+        <DialogTitle
+          sx={{
+            pb: 1.5,
+            fontWeight: 600,
+            fontSize: '1.125rem',
+            color: '#212529',
+            pt: 3,
+          }}
+        >
+          Change Password
+        </DialogTitle>
         <DialogContent>
-          {/* ...existing password fields (unchanged) */}
+          <Typography
+            variant="body2"
+            sx={{ color: '#6c757d', mb: 3, fontSize: '0.875rem' }}
+          >
+            Enter your current password and choose a new one
+          </Typography>
           <TextField
             fullWidth
             label={t('currentPassword')}
@@ -573,8 +741,10 @@ const ProfilePage: React.FC = () => {
             onChange={handlePasswordChange}
             error={!!passwordErrors.currentPassword}
             helperText={passwordErrors.currentPassword}
-            sx={{ my: 2 }}
+            size="small"
+            sx={{ mb: 2 }}
             InputProps={{
+              sx: { fontSize: '0.875rem' },
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
@@ -584,11 +754,13 @@ const ProfilePage: React.FC = () => {
                         current: !prev.current,
                       }))
                     }
+                    edge="end"
+                    size="small"
                   >
                     {showPasswordFields.current ? (
-                      <VisibilityOff />
+                      <VisibilityOff sx={{ fontSize: '1.125rem' }} />
                     ) : (
-                      <Visibility />
+                      <Visibility sx={{ fontSize: '1.125rem' }} />
                     )}
                   </IconButton>
                 </InputAdornment>
@@ -605,8 +777,10 @@ const ProfilePage: React.FC = () => {
             onChange={handlePasswordChange}
             error={!!passwordErrors.newPassword}
             helperText={passwordErrors.newPassword}
-            sx={{ my: 2 }}
+            size="small"
+            sx={{ mb: 2 }}
             InputProps={{
+              sx: { fontSize: '0.875rem' },
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
@@ -616,11 +790,13 @@ const ProfilePage: React.FC = () => {
                         new: !prev.new,
                       }))
                     }
+                    edge="end"
+                    size="small"
                   >
                     {showPasswordFields.new ? (
-                      <VisibilityOff />
+                      <VisibilityOff sx={{ fontSize: '1.125rem' }} />
                     ) : (
-                      <Visibility />
+                      <Visibility sx={{ fontSize: '1.125rem' }} />
                     )}
                   </IconButton>
                 </InputAdornment>
@@ -637,8 +813,10 @@ const ProfilePage: React.FC = () => {
             onChange={handlePasswordChange}
             error={!!passwordErrors.confirmPassword}
             helperText={passwordErrors.confirmPassword}
-            sx={{ my: 2 }}
+            size="small"
+            sx={{ mb: 1 }}
             InputProps={{
+              sx: { fontSize: '0.875rem' },
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
@@ -648,11 +826,13 @@ const ProfilePage: React.FC = () => {
                         confirm: !prev.confirm,
                       }))
                     }
+                    edge="end"
+                    size="small"
                   >
                     {showPasswordFields.confirm ? (
-                      <VisibilityOff />
+                      <VisibilityOff sx={{ fontSize: '1.125rem' }} />
                     ) : (
-                      <Visibility />
+                      <Visibility sx={{ fontSize: '1.125rem' }} />
                     )}
                   </IconButton>
                 </InputAdornment>
@@ -660,32 +840,95 @@ const ProfilePage: React.FC = () => {
             }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsPasswordDialogOpen(false)}>
+        <DialogActions sx={{ p: 3, pt: 2 }}>
+          <Button
+            onClick={() => setIsPasswordDialogOpen(false)}
+            sx={{
+              textTransform: 'none',
+              borderRadius: 1,
+              px: 3,
+              py: 1,
+              fontSize: '0.875rem',
+              color: '#6c757d',
+            }}
+          >
             {t('cancelSubmission')}
           </Button>
-          <Button variant="contained" onClick={handlePasswordSubmit}>
+          <Button
+            variant="contained"
+            onClick={handlePasswordSubmit}
+            sx={{
+              bgcolor: '#c8a45e',
+              color: 'white',
+              '&:hover': { bgcolor: '#b89049' },
+              textTransform: 'none',
+              borderRadius: 1,
+              px: 3,
+              py: 1,
+              fontSize: '0.875rem',
+              fontWeight: 500,
+            }}
+          >
             {t('savePassword')}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* --- NEW: Image Upload Dialog --- */}
-      <Dialog open={isImageDialogOpen} onClose={handleCloseImageDialog} fullWidth>
-        <DialogTitle textAlign={'center'}>{t('updateProfileImage')}</DialogTitle>
+      {/* Image Upload Dialog */}
+      <Dialog
+        open={isImageDialogOpen}
+        onClose={handleCloseImageDialog}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            pb: 1.5,
+            fontWeight: 600,
+            fontSize: '1.125rem',
+            color: '#212529',
+            textAlign: 'center',
+            pt: 3,
+          }}
+        >
+          {t('updateProfileImage')}
+        </DialogTitle>
         <DialogContent>
-          <Box textAlign="center" my={2}>
-            {previewUrl ? (
-              <Avatar src={previewUrl} sx={{ width: 100, height: 100, mx: 'auto' }} />
-            ) : (
-              <Typography variant="body2">No Image Selected</Typography>
-            )}
+          <Box textAlign="center" my={3}>
+            <Avatar
+              src={previewUrl}
+              sx={{
+                width: 140,
+                height: 140,
+                mx: 'auto',
+                mb: 3,
+                border: '3px solid #f0f0f0',
+              }}
+            />
             <Button
               variant="outlined"
               onClick={() => fileInputRef.current?.click()}
-              sx={{ mt: 2 }}
+              sx={{
+                textTransform: 'none',
+                borderRadius: 1,
+                px: 3,
+                py: 1,
+                borderColor: '#c8a45e',
+                color: '#c8a45e',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                '&:hover': {
+                  borderColor: '#b89049',
+                  bgcolor: 'rgba(200, 164, 94, 0.08)',
+                },
+              }}
             >
-                            Select Image
+              Select Image
             </Button>
             <input
               ref={fileInputRef}
@@ -694,217 +937,357 @@ const ProfilePage: React.FC = () => {
               hidden
               onChange={handleImageSelect}
             />
+            <Typography
+              variant="caption"
+              sx={{ color: '#6c757d', display: 'block', mt: 2, fontSize: '0.75rem' }}
+            >
+              {t('profileImageSize')}
+            </Typography>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel}>{t('cancelSubmission')}</Button>
-          <Button variant="contained" onClick={handleCloseImageDialog}>
+        <DialogActions sx={{ p: 3, pt: 2 }}>
+          <Button
+            onClick={handleCancel}
+            sx={{
+              textTransform: 'none',
+              borderRadius: 1,
+              px: 3,
+              py: 1,
+              fontSize: '0.875rem',
+              color: '#6c757d',
+            }}
+          >
+            {t('cancelSubmission')}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleCloseImageDialog}
+            sx={{
+              bgcolor: '#c8a45e',
+              color: 'white',
+              '&:hover': { bgcolor: '#b89049' },
+              textTransform: 'none',
+              borderRadius: 1,
+              px: 3,
+              py: 1,
+              fontSize: '0.875rem',
+              fontWeight: 500,
+            }}
+          >
             {t('done')}
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Stack direction="row" spacing={1} alignItems="center" justifyContent="center" mt={5}>
-        <Typography
-          variant="h3"
-          fontWeight="bold"
-          textAlign="center"
-          style={{ marginLeft: 5, marginRight: 5 }}
+      {/* Share Profile Section */}
+      <Container maxWidth="md" sx={{ mt: 3 }}>
+        <Box
+          sx={{
+            bgcolor: 'white',
+            borderRadius: 2,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+            p: 3,
+            textAlign: 'center',
+          }}
         >
-          {t('shareProfile')}
-        </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontWeight: 600,
+              color: '#212529',
+              mb: 2,
+              fontSize: '0.9375rem',
+            }}
+          >
+            {t('shareProfile')}
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleCopyLink}
+            startIcon={<ContentCopyIcon sx={{ fontSize: '1rem' }} />}
+            sx={{
+              bgcolor: '#c8a45e',
+              color: 'white',
+              textTransform: 'none',
+              px: 3,
+              py: 1,
+              borderRadius: 1,
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              '&:hover': {
+                bgcolor: '#b89049',
+              },
+            }}
+          >
+            {copied ? 'Copied!' : 'Copy Profile Link'}
+          </Button>
+        </Box>
+      </Container>
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleCopyLink}
-          startIcon={<ContentCopyIcon style={{ marginLeft: 7, marginRight: 2 }} />}
-        >
-          {copied ? 'Copied!' : 'Copy Link'}
-        </Button>
-      </Stack>
-
-      {/* --- User Vehicles Section --- */}
-      <Container maxWidth="lg" sx={{ mt: 6 }}>
-        <Typography variant="h3" fontWeight="bold" mb={3} textAlign={'center'}>
-          {t('yourVehicles')}
-        </Typography>
+      {/* User Vehicles Section */}
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Box mb={3}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              color: '#212529',
+              mb: 0.5,
+              fontSize: '1.125rem',
+            }}
+          >
+            {t('yourVehicles')}
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#6c757d', fontSize: '0.875rem' }}>
+            Manage your vehicle listings
+          </Typography>
+        </Box>
 
         {filteredVehicles?.length === 0 ? (
-          <Typography>{t('notCreated')}</Typography>
+          <Box
+            sx={{
+              bgcolor: 'white',
+              borderRadius: 2,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+              p: 6,
+              textAlign: 'center',
+            }}
+          >
+            <Typography variant="body2" sx={{ color: '#6c757d' }}>
+              {t('notCreated')}
+            </Typography>
+          </Box>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={2.5}>
             {filteredVehicles?.map((vehicle: Vehicle) => (
-              <Grid key={vehicle._id} item xs={12} sm={6} md={4} lg={6}>
+              <Grid key={vehicle._id} item xs={12} sm={6} md={4}>
                 <Box
                   sx={{
                     bgcolor: 'white',
                     borderRadius: 2,
-                    boxShadow: 2,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
                     height: '100%',
                     position: 'relative',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    },
                   }}
                 >
-                  <Button
-                    variant="contained"
+                  {/* Status Badge */}
+                  <Box
                     sx={{
-                      bgcolor: '#c8a45e',
                       position: 'absolute',
                       top: 10,
                       right: 10,
-                      textTransform: 'none',
-                      color: '#ffff',
-                      px: 1,
+                      zIndex: 2,
+                      bgcolor: vehicle.public ? '#28a745' : '#6c757d',
+                      color: 'white',
+                      px: 1.25,
                       py: 0.5,
+                      borderRadius: 1,
+                      fontSize: '0.6875rem',
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
                     }}
                   >
                     {vehicle.public ? 'Public' : 'Private'}
-                  </Button>
-                  {/* Image */}
+                  </Box>
+
+                  {/* Menu Button */}
+                  <IconButton
+                    onClick={(e: React.MouseEvent<HTMLElement>) => handleMenuOpen(e, vehicle)}
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: 10,
+                      left: 10,
+                      zIndex: 2,
+                      bgcolor: 'rgba(255, 255, 255, 0.95)',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                      '&:hover': {
+                        bgcolor: 'white',
+                      },
+                    }}
+                  >
+                    <MoreVertIcon sx={{ fontSize: '1.25rem' }} />
+                  </IconButton>
+
+                  {/* Vehicle Image */}
                   <Box
                     component="img"
                     src={vehicle.media?.[0]?.url || '/no-image.jpg'}
                     alt={vehicle.title}
                     sx={{
                       width: '100%',
-                      height: 300,
+                      height: 200,
                       objectFit: 'cover',
                     }}
                   />
 
-                  <IconButton
-                    onClick={(e: React.MouseEvent<HTMLElement>) => handleMenuOpen(e, vehicle)}
-                    disableRipple
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'right',
-                      justifyItems: 'right',
-                      backgroundColor: 'transparent',
-                      '&:hover': {
-                        backgroundColor: 'transparent',
-                      },
-                      '&:focus': {
-                        backgroundColor: 'transparent',
-                      },
-                      '&:active': {
-                        backgroundColor: 'transparent',
-                      },
-                    }}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-
-                  <Box sx={{ flexGrow: 0, justifyContent: 'end' }}>
-                    <Menu
-                      sx={{ mt: '45px' }}
-                      id="menu-appbar"
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={handleMenuClose}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      PaperProps={{
-                        sx: {
-                          boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.06)',
-                        },
-                      }}
-                    >
-                      <MenuItem
-                      sx={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          if (selectedVehicle) {
-                            updatePublicStatus({
-                              id: selectedVehicle._id,
-                              isPublic: !selectedVehicle.public,
-                            });
-                          }
-                          handleMenuClose();
-                        }}
-                      >
-                                                Make{' '}
-                        {selectedVehicle?.public ? 'Private' : 'Public'}
-                      </MenuItem>
-                      <MenuItem>
-                        <Link href={`/cars/${vehicle._id}`} passHref style={{ textDecoration: 'none', color: 'black' }}>
-                              
-                              More Details
-                              
-                            </Link>
-                      </MenuItem>
-                    </Menu>
-                  </Box>
-
-                  {/* Details */}
-                  <Box p={2} flexGrow={1}>
-                    {/* Title & Basic Info */}
+                  {/* Vehicle Details */}
+                  <Box sx={{ p: 2.5, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                     <Typography
-                      variant="h4"
-                      fontWeight="bold"
-                      gutterBottom
-                      noWrap
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#212529',
+                        mb: 0.5,
+                        fontSize: '0.9375rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 1,
+                        WebkitBoxOrient: 'vertical',
+                      }}
                     >
                       {vehicle.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {vehicle.brand} • {vehicle.model} • {vehicle.year}
-                    </Typography>
+
                     <Typography
                       variant="body2"
-                      color="text.secondary"
-                      gutterBottom
+                      sx={{
+                        color: '#6c757d',
+                        mb: 1,
+                        fontSize: '0.8125rem',
+                      }}
+                    >
+                      {vehicle.brand} • {vehicle.model} • {vehicle.year}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: '#6c757d',
+                        mb: 2,
+                        fontSize: '0.8125rem',
+                      }}
                     >
                       {vehicle.location?.city}, {vehicle.location?.country}
                     </Typography>
 
-                    {/* Price */}
-                    <Typography
-                      variant="h4"
-                      color="primary"
-                      fontWeight="bold"
-                      mt={1}
-                    >
-                                            Price : ${vehicle.price}
-                    </Typography>
+                    <Box sx={{ mt: 'auto', pt: 2, borderTop: '1px solid #e9ecef' }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color: '#c8a45e',
+                          mb: 2,
+                          fontWeight: 600,
+                          fontSize: '1.125rem',
+                        }}
+                      >
+                        ${vehicle.price.toLocaleString()}
+                      </Typography>
 
-                    <Typography variant="h4" fontWeight="bold" mt={3}>
-                                            Other Details
-                    </Typography>
-
-                    {/* More Info: 2 columns */}
-                    <Grid container spacing={1} mt={0}>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="h6" color="text.secondary">
-                                                    Fuel: {vehicle.fuelType}
-                        </Typography>
-                        <Typography variant="h6" color="text.secondary">
-                                                    Trans: {vehicle.transmission}
-                        </Typography>
-                        <Typography variant="h6" color="text.secondary">
-                                                    Mileage: {vehicle.mileage} km
-                        </Typography>
+                      <Grid container spacing={1.5}>
+                        <Grid item xs={6}>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6c757d', fontSize: '0.75rem', display: 'block', mb: 0.5 }}
+                          >
+                            Fuel
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8125rem' }}>
+                            {vehicle.fuelType}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6c757d', fontSize: '0.75rem', display: 'block', mb: 0.5 }}
+                          >
+                            Transmission
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8125rem' }}>
+                            {vehicle.transmission}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6c757d', fontSize: '0.75rem', display: 'block', mb: 0.5 }}
+                          >
+                            Mileage
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8125rem' }}>
+                            {vehicle.mileage.toLocaleString()} km
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: '#6c757d', fontSize: '0.75rem', display: 'block', mb: 0.5 }}
+                          >
+                            Condition
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.8125rem' }}>
+                            {vehicle.condition}
+                          </Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <Typography variant="h6" color="text.secondary">
-                                                    Condition: {vehicle.condition}
-                        </Typography>
-                        <Typography variant="h6" color="text.secondary">
-                                                    Status: {vehicle.status}
-                        </Typography>
-                        <Typography variant="h6" color="text.secondary">
-                                                    Type: {vehicle.type}
-                        </Typography>
-                      </Grid>
-                    </Grid>
+                    </Box>
                   </Box>
+
+                  {/* Menu */}
+                  <Menu
+                    sx={{ mt: '45px' }}
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl) && selectedVehicle?._id === vehicle._id}
+                    onClose={handleMenuClose}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    PaperProps={{
+                      sx: {
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                        borderRadius: 1,
+                        minWidth: 160,
+                        mt: 0.5,
+                      },
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        if (selectedVehicle) {
+                          updatePublicStatus({
+                            id: selectedVehicle._id,
+                            isPublic: !selectedVehicle.public,
+                          });
+                        }
+                        handleMenuClose();
+                      }}
+                      sx={{
+                        py: 1.25,
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      Make {selectedVehicle?.public ? 'Private' : 'Public'}
+                    </MenuItem>
+                    <MenuItem
+                      sx={{
+                        py: 1.25,
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      <Link
+                        href={`/cars/${vehicle._id}`}
+                        passHref
+                        style={{ textDecoration: 'none', color: 'inherit', width: '100%' }}
+                      >
+                        View Details
+                      </Link>
+                    </MenuItem>
+                  </Menu>
                 </Box>
               </Grid>
             ))}

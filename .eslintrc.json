@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "next/core-web-vitals"
-  ],
+  "extends": [],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -11,27 +9,7 @@
     }
   },
   "plugins": ["@typescript-eslint"],
-  "rules": {
-    // "no-console": "warn",
-    // "@typescript-eslint/no-unused-vars": "error",
-    // "@typescript-eslint/no-explicit-any": "warn",
-    // "prefer-const": "error",
-    // "no-var": "error",
-    // "no-duplicate-imports": "error",
-    // "no-unused-expressions": "error",
-    // "no-unreachable": "error",
-    // "no-constant-condition": "error",
-    // "no-empty": "error",
-    // "no-extra-semi": "error",
-    // "no-irregular-whitespace": "error",
-    // "no-multiple-empty-lines": ["error", { "max": 1 }],
-    // "no-trailing-spaces": "error",
-    // "eol-last": "error",
-    // "comma-dangle": ["error", "always-multiline"],
-    // "quotes": ["error", "single", { "avoidEscape": true }],
-    // "semi": ["error", "always"],
-    // "indent": ["error", 2, { "SwitchCase": 1 }]
-  },
+  "rules": {},
   "ignorePatterns": [
     "node_modules/",
     ".next/",

@@ -173,7 +173,7 @@ const CreateDealerModal = ({ open, handleClose, onSubmit }: { open: boolean, han
                     control={
                       <Checkbox
                         name="isVerified"
-                        checked={values.isVerified}
+                        checked={values.isVerified as boolean}
                         onChange={handleChange}
                       />
                     }

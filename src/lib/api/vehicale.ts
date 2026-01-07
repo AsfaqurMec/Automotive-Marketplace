@@ -99,5 +99,20 @@ export const vehicaleApi = {
     const response = await vehicaleInstance.get('/filter', { params: filters });
     return response.data;
   },
+
+  updateVehicleStatus: async ({ id, status, user }: { id: string, status: string, user: User }) => {
+    authorize(user, 'car', 'edit');
+    const response = await vehicaleInstance.patch(`/${id}/status`, { status });
+    return response.data;
+  },
+
+  markVehicleAsSold: async ({ id, soldData, user }: { id: string, soldData: Record<string, unknown>, user: User }) => {
+    console.log('markVehicleAsSold API called', { id, soldData, user });
+    authorize(user, 'car', 'edit');
+    console.log('Making POST request to:', `/${id}/sold`);
+    const response = await vehicaleInstance.post(`/${id}/sold`, soldData);
+    console.log('API response:', response.data);
+    return response.data;
+  },
 };
 

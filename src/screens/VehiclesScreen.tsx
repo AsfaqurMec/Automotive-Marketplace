@@ -217,7 +217,7 @@ const VehiclesScreen: React.FC = () => {
         </Box>
         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-start', mt: 1 }}>
           <Link href={`/cars/${vehicle._id}`} style={{ textDecoration: 'none' }}>
-            <Button variant="outlined" sx={{ textTransform: 'none' }}>
+            <Button variant="outlined" sx={{ textTransform: 'none', fontSize: '14px', py: 1 }}>
               {t('moreDetails') || 'More Details'}
             </Button>
           </Link>
@@ -228,10 +228,10 @@ const VehiclesScreen: React.FC = () => {
               bgcolor: colors.primary,
               color: '#fff',
               px: 3,
-              py: 1.5,
+              py: 1,
               borderRadius: 2,
               textTransform: 'none',
-              fontSize: '16px',
+              fontSize: '14px',
               fontWeight: 500,
               '&:hover': {
                 bgcolor: '#9c783d',

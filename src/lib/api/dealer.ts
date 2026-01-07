@@ -26,12 +26,15 @@ export const getDealers = (params = {}) => {
   });
 };
 
-export const getDashboardSummary = async () => {
+export const getDashboardSummary = async (userId?: string) => {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
     const response = await axios.get(
       `${apiUrl}/api/dealer/dashboard/summary`,
-      { withCredentials: true }
+      { 
+        params: userId ? { userId } : {},
+        withCredentials: true 
+      }
     );
     return response.data;
   } catch (error) {
