@@ -53,6 +53,7 @@
         "@types/react-image-gallery": "^1.2.4",
         "@typescript-eslint/eslint-plugin": "^8.41.0",
         "@typescript-eslint/parser": "^8.41.0",
+        "docx": "^9.5.1",
         "eslint": "^8.57.1",
         "eslint-config-next": "^15.5.2",
         "prettier": "^3.6.2",

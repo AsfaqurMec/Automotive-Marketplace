@@ -59,20 +59,29 @@ export default function TopBar(): React.JSX.Element {
       }}
     >
       {/* Left: Social icons + contact email */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <IconButton size="small" component="a" href="https://facebook.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
-          <FacebookIcon sx={{ fontSize: 18 }} />
-        </IconButton>
-        <IconButton size="small" component="a" href="https://x.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
-          <XIcon sx={{ fontSize: 18 }} />
-        </IconButton>
-        <IconButton size="small" component="a" href="https://instagram.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
-          <InstagramIcon sx={{ fontSize: 18 }} />
-        </IconButton>
-        <IconButton size="small" component="a" href="https://linkedin.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
-          <LinkedInIcon sx={{ fontSize: 18 }} />
-        </IconButton>
-        <MLink href="mailto:contact@nextdeal.com" underline="none" sx={{ color: white, fontSize: 12 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: { xs: 'center', sm: 'center' },
+          gap: { xs: 0.0, sm: 1.5 },
+          flexDirection: { xs: 'column', sm: 'row' },
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <IconButton size="small" component="a" href="https://facebook.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
+            <FacebookIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+          <IconButton size="small" component="a" href="https://x.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
+            <XIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+          <IconButton size="small" component="a" href="https://instagram.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
+            <InstagramIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+          <IconButton size="small" component="a" href="https://linkedin.com" target="_blank" rel="noopener noreferrer" sx={{ color: white }}>
+            <LinkedInIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Box>
+        <MLink href="mailto:contact@nextdeal.com" underline="none" sx={{ color: white, fontSize: 12, mt: { xs: 0.0, sm: 0 } }}>
           contact@nextdeal.com
         </MLink>
       </Box>
@@ -130,11 +139,16 @@ export default function TopBar(): React.JSX.Element {
           }}
         >
           <Typography sx={{ mr: 0.5 }}>{LANGUAGE_FLAG[currentLang]}</Typography>
-          {!isXs && (
-            <Typography variant="body2" sx={{ fontWeight: 600, color: white }}>
-              {currentLangLabel}
-            </Typography>
-          )}
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              color: white,
+              display: { xs: 'inline', sm: 'inline' },
+            }}
+          >
+            {isXs ? currentLang.toUpperCase() : currentLangLabel}
+          </Typography>
           <ExpandMoreIcon sx={{ fontSize: 18, ml: 0.25 }} />
         </IconButton>
         <Menu

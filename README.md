@@ -14,6 +14,10 @@ A modern, feature-rich car marketplace and dealership management platform built 
 
 NextDeal is a comprehensive automotive platform that connects car buyers, sellers, dealers, and garages. The platform offers vehicle listings, dealer management, community features, chat functionality, and administrative tools for managing the marketplace.
 
+## 📄 Project Report
+
+- **Software Project Report (International Standard Format):** `docs/NextDeal_Project_Report.md`
+
 ## ✨ Features
 
 ### 🏠 User Features
