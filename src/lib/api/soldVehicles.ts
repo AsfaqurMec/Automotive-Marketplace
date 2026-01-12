@@ -48,8 +48,8 @@ export const getSoldVehicles = async (
   user: User,
 ): Promise<ApiResponse<PaginatedResponse<SoldVehicleData>>> => {
   // Check for admin role directly (more reliable than permission check)
-  if (user?.role?.roleId !== 'admin' && user?.role?.roleId !== 'superAdmin') {
-    throw new Error('Unauthorized: Admin access required');
+  if (user?.role?.roleId !== 'admin' && user?.role?.roleId !== 'superAdmin' && user?.role?.roleId !== 'dealer') {
+    throw new Error('Unauthorized: Admin, Super Admin or Dealer access required');
   }
   const response = await soldVehiclesInstance.get(
     `?page=${page}&limit=${limit}&search=${search}`,

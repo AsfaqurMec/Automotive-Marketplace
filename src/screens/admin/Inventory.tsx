@@ -48,7 +48,10 @@ import { Vehicle, Garage, User } from '@/types';
 import Price from '@/components/ui/Price';
 import StatusChangeModal from '@/components/modal/StatusChangeModal';
 import SoldModal, { SoldData } from '@/components/modal/SoldModal';
+import { getSoldVehicles, SoldVehicleData } from '@/lib/api/soldVehicles';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 interface CarData {
   _id: string;
@@ -124,7 +127,6 @@ const InventoryComponent: React.FC = () => {
   const { user } = useAuth();
   const route = useRouter();
   const { primary, white } = colors;
-
   const [openGarage, setOpeGarage] = useState(false);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
@@ -151,6 +153,41 @@ const InventoryComponent: React.FC = () => {
     queryKey: ['get-vehicale'],
     queryFn: () => vehicaleApi.getAllVehicale(user as User),
   });
+
+  // Fetch sold vehicles data
+  const { data: soldVehiclesData, isLoading: isLoadingSoldVehicles } = useQuery({
+    queryKey: ['get-sold-vehicles', 1, 1000, ''],
+    queryFn: () => {
+      if (!user) throw new Error('User not authenticated');
+      return getSoldVehicles(1, 1000, '', user);
+    },
+    enabled: !!user?._id,
+  });
+  console.log(soldVehiclesData);
+  
+  const soldVehicles = useMemo(() => {
+    if (!soldVehiclesData?.data?.data) return [];
+    return soldVehiclesData.data.data;
+  }, [soldVehiclesData]);
+
+  // Filter sold vehicles by sellerId (current user)
+  const filteredSoldVehicles = useMemo(() => {
+    if (!soldVehicles || !user?._id) return [];
+    return soldVehicles.filter((sale: SoldVehicleData) => sale.sellerId === user._id);
+  }, [soldVehicles, user?._id]);
+
+  // Separate internal and external buyers
+  const internalBuyerVehicles = useMemo(() => {
+    return filteredSoldVehicles.filter((sale: SoldVehicleData) => 
+      sale.dealerID && sale.dealerID.trim() !== ''
+    );
+  }, [filteredSoldVehicles]);
+
+  const externalBuyerVehicles = useMemo(() => {
+    return filteredSoldVehicles.filter((sale: SoldVehicleData) => 
+      !sale.dealerID || sale.dealerID.trim() === ''
+    );
+  }, [filteredSoldVehicles]);
 
   // useQuery({
   //   queryKey: ['get-garageData'],
@@ -304,6 +341,18 @@ const InventoryComponent: React.FC = () => {
     },
   });
 
+  const { mutate: updatePublicStatus } = useMutation({
+    mutationFn: (data: { id: string; isPublic: boolean }) => vehicaleApi.updateVehiclePublic(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-vehicale'] });
+      toast.success('Visibility updated');
+      handleMenuClose();
+    },
+    onError: () => {
+      toast.error('Failed to update visibility');
+    },
+  });
+
   const handleStatusChangeClick = (item: Vehicle) => {
     setSelectedVehicleForStatus(item);
     setOpenStatusChangeModal(true);
@@ -374,6 +423,10 @@ const InventoryComponent: React.FC = () => {
   const subTabsForMainTab = useMemo(() => {
     if (mainTab === 2) {
       return [t('subTabs.active'), t('subTabs.expired')];
+    }
+    if (mainTab === 3 || mainTab === 4) {
+      // Sold Internal/External tabs - no sub tabs needed
+      return [];
     }
     return [
       t('subTabs.all'),
@@ -530,6 +583,7 @@ const InventoryComponent: React.FC = () => {
           })) ?? []
         }
         deleteCount={deleteCount}
+        soldVehicles={filteredSoldVehicles}
       />
 
       <Box
@@ -563,58 +617,66 @@ const InventoryComponent: React.FC = () => {
           <Tab label={t('myListings')} />
           <Tab label={t('saved')} />
           <Tab label={t('inMiniSite')} />
+          <Tab label={t('Sold-Internal Buyer') || 'Sold - Internal Buyer'} />
+          <Tab label={t('Sold-External Buyer') || 'Sold - External Buyer'} />
         </Tabs>
         <div className="padding">
           {/*  SUB Tabs */}
-
-          <Tabs
-            value={subTab}
-            onChange={(e, newVal) => setSubTab(newVal)}
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{ mb: 2 }}
-          >
-            {subTabsForMainTab.map((label, idx) => (
-              <Tab
-                key={idx}
-                style={{ marginRight: '20px' }}
-                label={
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyItems: 'center',
-                      gap: 1,
-                    }}
-                  >
-                    <Chip
-                      label={subTabCounts[label] ?? 0}
-                      size="small"
-                      color={
-                        label === t('subTabs.sold')
-                          ? 'success'
-                          : label === t('subTabs.withActiveExclusivity')
-                            ? 'primary'
-                            : label === t('subTabs.exclusivityEnded')
-                              ? 'error'
-                              : label === t('subTabs.active')
-                                ? 'success'
-                                : label === t('subTabs.expired')
-                                  ? 'error'
-                                  : 'default'
-                      }
-                      sx={{ borderRadius: '8px' }}
-                    />
-                    <Typography variant="body2">{label}</Typography>
-                  </Box>
-                }
-              />
-            ))}
-          </Tabs>
+          {subTabsForMainTab.length > 0 && (
+            <Tabs
+              value={subTab}
+              onChange={(e, newVal) => setSubTab(newVal)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ mb: 2 }}
+            >
+              {subTabsForMainTab.map((label, idx) => (
+                <Tab
+                  key={idx}
+                  style={{ marginRight: '20px' }}
+                  label={
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyItems: 'center',
+                        gap: 1,
+                      }}
+                    >
+                      <Chip
+                        label={subTabCounts[label] ?? 0}
+                        size="small"
+                        color={
+                          label === t('subTabs.sold')
+                            ? 'success'
+                            : label === t('subTabs.withActiveExclusivity')
+                              ? 'primary'
+                              : label === t('subTabs.exclusivityEnded')
+                                ? 'error'
+                                : label === t('subTabs.active')
+                                  ? 'success'
+                                  : label === t('subTabs.expired')
+                                    ? 'error'
+                                    : 'default'
+                        }
+                        sx={{ borderRadius: '8px' }}
+                      />
+                      <Typography variant="body2">{label}</Typography>
+                    </Box>
+                  }
+                />
+              ))}
+            </Tabs>
+          )}
 
           {/*  Listings Count */}
           <Typography variant="h6" sx={{ mb: 1 }}>
-            {t('myListings')} ({filteredVehicles?.length})
+            {mainTab === 3 
+              ? `${t('soldInternalBuyer') || 'Sold - Internal Buyer'} (${internalBuyerVehicles?.length || 0})`
+              : mainTab === 4
+              ? `${t('soldExternalBuyer') || 'Sold - External Buyer'} (${externalBuyerVehicles?.length || 0})`
+              : `${t('myListings')} (${filteredVehicles?.length})`
+            }
           </Typography>
 
           {/*  Table */}
@@ -622,23 +684,107 @@ const InventoryComponent: React.FC = () => {
             <Table>
               <TableHead style={{ background: '#f3e5b6' }}>
                 <TableRow>
-                <TableCell>Actions</TableCell>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Brand</TableCell>
-                  <TableCell>Model</TableCell>
-                  <TableCell>Image</TableCell>
-
-                  <TableCell>{t('price')}</TableCell>
-                  <TableCell>{t('status')}</TableCell>
-
-                  <TableCell></TableCell>
+                  {mainTab === 3 || mainTab === 4 ? (
+                    // Sold vehicles table headers
+                    <>
+                      <TableCell>{t('date') || 'Date'}</TableCell>
+                      <TableCell>{t('buyer') || 'Buyer'}</TableCell>
+                      <TableCell>{t('email') || 'Email'}</TableCell>
+                      <TableCell>{t('contact') || 'Contact'}</TableCell>
+                      <TableCell>{t('vehicle') || 'Vehicle'}</TableCell>
+                      <TableCell>{t('amount') || 'Amount'}</TableCell>
+                    </>
+                  ) : (
+                    // Regular inventory table headers
+                    <>
+                      <TableCell>Actions</TableCell>
+                      <TableCell>Title</TableCell>
+                      <TableCell>Brand</TableCell>
+                      <TableCell>Model</TableCell>
+                      <TableCell>Image</TableCell>
+                      <TableCell>{t('price')}</TableCell>
+                      <TableCell>{t('status')}</TableCell>
+                      <TableCell>Visibility</TableCell>
+                      <TableCell></TableCell>
+                    </>
+                  )}
                 </TableRow>
               </TableHead>
 
               <TableBody>
-                {filteredDatas
-                  ?.slice((page - 1) * limit, page * limit)
-                  .map((item: Vehicle) => {
+                {mainTab === 3 || mainTab === 4 ? (
+                  // Display sold vehicles
+                  isLoadingSoldVehicles ? (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                        <Typography>{t('loading') || 'Loading...'}</Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (mainTab === 3 ? internalBuyerVehicles : externalBuyerVehicles).length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                        <Typography color="text.secondary">
+                          {t('noSoldVehicles') || 'No sold vehicles found'}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    (mainTab === 3 ? internalBuyerVehicles : externalBuyerVehicles)
+                      .slice((page - 1) * limit, page * limit)
+                      .map((sale: SoldVehicleData) => (
+                        <TableRow key={sale._id} hover>
+                          <TableCell>
+                            {sale.createdAt
+                              ? new Date(sale.createdAt).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : '-'}
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" fontWeight={500}>
+                              {sale.name}
+                            </Typography>
+                            {sale.dealer?.companyName && (
+                              <Typography variant="caption" color="text.secondary">
+                                {sale.dealer.companyName}
+                              </Typography>
+                            )}
+                          </TableCell>
+                          <TableCell>{sale.email}</TableCell>
+                          <TableCell>{sale.contact}</TableCell>
+                          <TableCell>
+                            {sale.vehicle ? (
+                              <Box>
+                                <Typography variant="body2" fontWeight={500}>
+                                  {sale.vehicle.title || `${sale.vehicle.brand} ${sale.vehicle.model}`}
+                                </Typography>
+                                {sale.vehicle.year && (
+                                  <Typography variant="caption" color="text.secondary">
+                                    {sale.vehicle.year}
+                                  </Typography>
+                                )}
+                              </Box>
+                            ) : (
+                              <Typography variant="body2" color="text.secondary">
+                                {t('vehicleNotAvailable') || 'N/A'}
+                              </Typography>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Price amountUSD={sale.amount} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                  )
+                ) : (
+                  // Regular inventory table
+                  filteredDatas
+                    ?.slice((page - 1) * limit, page * limit)
+                    .map((item: Vehicle) => {
                     const isExpanded = expandedRowId === item._id;
                     return (
                       <React.Fragment key={item._id}>
@@ -695,6 +841,28 @@ const InventoryComponent: React.FC = () => {
                                 </ListItemIcon>
                                 <ListItemText>
                                   {t('changeStatus') || 'Change Status'}
+                                </ListItemText>
+                              </MenuItem>
+
+                              <MenuItem
+                                onClick={() => {
+                                  if (selectedItems) {
+                                    updatePublicStatus({
+                                      id: selectedItems._id,
+                                      isPublic: !selectedItems.public,
+                                    });
+                                  }
+                                }}
+                              >
+                                <ListItemIcon>
+                                  {selectedItems?.public ? (
+                                    <VisibilityOffIcon />
+                                  ) : (
+                                    <VisibilityIcon />
+                                  )}
+                                </ListItemIcon>
+                                <ListItemText>
+                                  Make {selectedItems?.public ? 'Private' : 'Public'}
                                 </ListItemText>
                               </MenuItem>
 
@@ -762,12 +930,36 @@ const InventoryComponent: React.FC = () => {
                               />
                             </Stack>
                           </TableCell>
+
+                          <TableCell>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              {item?.public ? (
+                                <>
+                                  <VisibilityIcon fontSize="small" color="primary" />
+                                  <Chip
+                                    label="Public"
+                                    color="success"
+                                    size="small"
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <VisibilityOffIcon fontSize="small" color="action" />
+                                  <Chip
+                                    label="Private"
+                                    color="error"
+                                    size="small"
+                                  />
+                                </>
+                              )}
+                            </Stack>
+                          </TableCell>
                         </TableRow>
 
                         {/* Expandable Content Row */}
                         <TableRow>
                           <TableCell
-                            colSpan={7}
+                            colSpan={8}
                             sx={{ paddingBottom: 0, paddingTop: 0 }}
                           >
                             <Collapse
@@ -970,7 +1162,8 @@ const InventoryComponent: React.FC = () => {
                         </TableRow>
                       </React.Fragment>
                     );
-                  })}
+                  })
+                )}
               </TableBody>
             </Table>
           </Box>
@@ -1004,7 +1197,11 @@ const InventoryComponent: React.FC = () => {
             </TextField>
 
             <Pagination
-              count={Math.ceil((filteredDatas?.length || 0) / limit)}
+              count={Math.ceil(
+                (mainTab === 3 || mainTab === 4
+                  ? (mainTab === 3 ? internalBuyerVehicles : externalBuyerVehicles).length
+                  : filteredDatas?.length || 0) / limit
+              )}
               page={page}
               onChange={(e, value) => setPage(value)}
               color="primary"

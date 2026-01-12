@@ -399,6 +399,23 @@
      "flexView": "פלקס (2 בשורה)",
      "singleView": "בודד (רוחב מלא)",
      "failedToLoadVehicles": "נכשל בטעינת כלי רכב",
-     "noVehiclesFound": "לא נמצאו כלי רכב"
-     
+     "noVehiclesFound": "לא נמצאו כלי רכב",
+     "sparePartsMarketplace": "שוק חלקי חילוף",
+     "recommendedGarages": "מוסכים מומלצים",
+     "recommendedAgencies": "סוכנויות מומלצות",
+     "rentVehicle": "השכרת רכב",
+     "rentCar": "השכרת רכב",
+     "vehiclePredictionTrends": "מגמות חיזוי רכב",
+     "hotVehicle": "רכב חם",
+     "availability": "זמינות",
+     "engine": "מנוע",
+     "model": "דגם",
+     "type": "סוג",
+     "brand": "מותג",
+     "contactDealer": "צור קשר עם סוכן",
+     "vehicleNotFound": "רכב לא נמצא",
+     "pleaseTryAgainLater": "אנא נסה שוב מאוחר יותר",
+     "search": "חיפוש",
+     "location": "מיקום",
+     "enterLocation": "הזן מיקום"
 }

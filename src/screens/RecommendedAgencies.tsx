@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import NavigationMenu from '@/components/ui/NavigationButtons';
 import Box from '@mui/material/Box';
 import LocationSearchBar from '@/components/ui/LocationSearchBar';
@@ -7,6 +8,7 @@ import AutoShopCard from '@/components/ui/GarageCard';
 import AgencyImage from '@/assets/Agency.png';
 
 const RecommendedAgenciesComponent: React.FC = () => {
+  const { t } = useTranslation();
   const cars = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   const foreground = colors.foreground;
@@ -21,7 +23,7 @@ const RecommendedAgenciesComponent: React.FC = () => {
       }}
     >
       <NavigationMenu />
-      <LocationSearchBar text={'Recommended Agencies'} />
+      <LocationSearchBar text={t('recommendedAgencies')} />
 
       <Box
         sx={{

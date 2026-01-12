@@ -48,6 +48,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getSubscriptions } from '@/lib/api/subscription';
 import useAuth from '@/lib/hooks/useAuth';
 import { Subscription } from '@/types';
+import { useCurrency } from '@/lib/hooks/CurrencyProvider';
 
 interface PaymentMethod {
   id: string;
@@ -97,6 +98,7 @@ function SubscriptionPlansViewer({
     isProcessingPayment?: boolean;
 }) {
   const { t } = useTranslation();
+  const { formatFromUSD } = useCurrency();
 
   return (
     <Box>
@@ -165,7 +167,7 @@ function SubscriptionPlansViewer({
                   }}
                 >
                   <Typography component="h2" variant="h2" fontWeight="bold">
-                                        ${plan.price}
+                                        {formatFromUSD(plan.price)}
                   </Typography>
                   <Typography variant="h6" color="text.secondary">
                                         /{t('mo')}
@@ -268,7 +270,7 @@ function SubscriptionPlansViewer({
               </Typography>
               <Box sx={{ textAlign: 'center', my: 2 }}>
                 <Typography variant="h4" fontWeight="bold" color="primary">
-                                    ${selectedPlan.price} / {t('mo')}
+                                    {formatFromUSD(selectedPlan.price)} / {t('mo')}
                 </Typography>
               </Box>
               <Divider sx={{ my: 2 }} />
@@ -354,6 +356,7 @@ function SubscriptionPlansViewer({
 
 function UserSubscriptionDetails({ currentPlan, paymentMethods, renew }: { currentPlan: CurrentPlan | null, paymentMethods: PaymentMethod[], renew: string }) {
   const { t } = useTranslation();
+  const { formatFromUSD } = useCurrency();
 
   const renewDate = new Date(renew).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -394,7 +397,7 @@ function UserSubscriptionDetails({ currentPlan, paymentMethods, renew }: { curre
               sx={{ fontSize: '1.1rem', p: 2.5, borderRadius: 2, fontWeight: 'bold' }}
             />
             <Typography variant="h4" fontWeight="bold">
-                            ${currentPlan.price}
+                            {formatFromUSD(currentPlan.price)}
               <Typography component="span" color="text.secondary">
                                 /{t('mo')}
               </Typography>

@@ -37,11 +37,14 @@ function GoogleButton(props: GoogleButtonProps) {
   const router = useRouter();
   const { textBlack } = colors;
   const [err, setErr] = React.useState<string>('');
-  const { setUser, userStatus } = useAuth();
+  const { setUser, userStatus, setIsLoggingIn } = useAuth();
   const { t } = useTranslation();
   const { isPending , mutate } = useMutation({
     mutationFn: (token: string) => googleLogin(token) as Promise<GoogleLoginResponse>,
     onSuccess: async (d: GoogleLoginResponse) => {
+      // Set loading state for login navigation
+      setIsLoggingIn(true);
+      
       userStatus();
       toast.success('Login Successfully');
       if (sessionStorage.getItem('fromLogin') === 'true') {
@@ -54,6 +57,7 @@ function GoogleButton(props: GoogleButtonProps) {
       // Refetch the auth status manually
       await queryClient.invalidateQueries({ queryKey: ['authStatus'] });
 
+      // Navigate to dashboard - loading state will be cleared when navigation completes
       router.push('/admin/dashboard');
       if (typeof props.onSuccess === 'function') props.onSuccess();
     },

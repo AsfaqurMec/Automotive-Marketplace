@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import NavigationMenu from '@/components/ui/NavigationButtons';
 import CarList from '@/components/ui/Category';
 import HomePageCars from '@/components/ui/HomePageCars';
@@ -8,6 +9,7 @@ import Box from '@mui/material/Box';
 import { Vehicle } from '@/types';
 
 const RentVehiclesComponent: React.FC = () => {
+  const { t } = useTranslation();
   const bgColor = colors.background;
 
   const foreground = colors.foreground;
@@ -32,14 +34,14 @@ const RentVehiclesComponent: React.FC = () => {
       >
         <NavigationMenu />
       </Box>
-      <LocationSearchBar text={'Rent Vehicle'} />
+      <LocationSearchBar text={t('rentVehicle')} />
 
       <CarList />
 
       <HomePageCars
-        text={'Rent Car'}
+        text={t('rentCar')}
         cars={[0, 1, 3, 4, 5, 6, 7, 8, 9, 10] as unknown as Vehicle[]}
-        buttonText={'Rent Car'}
+        buttonText={t('rentCar')}
       />
     </Box>
   );

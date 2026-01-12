@@ -35,6 +35,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { clearNavbarUserData } from '../layouts/Navbar';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Price from './Price';
 
 // Define types for better type safety
 interface Vehicle {
@@ -1180,7 +1181,7 @@ const ProfilePage: React.FC = () => {
                           fontSize: '1.125rem',
                         }}
                       >
-                        ${vehicle.price.toLocaleString()}
+                        <Price amountUSD={Number(vehicle.price) || 0} />
                       </Typography>
 
                       <Grid container spacing={1.5}>

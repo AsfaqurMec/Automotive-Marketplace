@@ -16,6 +16,7 @@ import useAuth from '@/lib/hooks/useAuth';
 import CustomLoaderForComponent from '@/components/ui/CustomLoaderForComponent';
 import Cookies from 'js-cookie';
 import { Campaign, User } from '@/types';
+import { useCurrency } from '@/lib/hooks/CurrencyProvider';
 
 // Define the response type for campaigns API
 interface CampaignsResponse {
@@ -28,6 +29,7 @@ type MutateFunction = (params: { campaignId: string; PayerID: string; token: str
 
 const Advertisement: React.FC = () => {
   const { t } = useTranslation();
+  const { formatFromUSD } = useCurrency();
   const theme = useTheme() as Theme;
   const isDarkMode = theme.palette.mode === 'dark';
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
@@ -241,8 +243,8 @@ const Advertisement: React.FC = () => {
             sx={{ color: theme.palette.text.secondary }}
           >
             {totalClicks > 0
-              ? `${((campaign?.payment?.price || 0) / totalClicks).toFixed(2)} USD`
-              : '0.00 USD'}
+              ? formatFromUSD((campaign?.payment?.price || 0) / totalClicks)
+              : formatFromUSD(0)}
           </Typography>
         </Card>
       </Grid>
@@ -307,20 +309,18 @@ const Advertisement: React.FC = () => {
             component="div"
             sx={{ color: theme.palette.text.secondary }}
           >
-            {`$${
-              campaign?.payment?.price && campaign.startDate && campaign.endDate
-                ? (() => {
-                    const days = Math.max(
-                      1,
-                      moment(campaign.endDate).diff(
-                        moment(campaign.startDate),
-                        'days'
-                      ) + 1
-                    );
-                    return (campaign.payment.price / days).toFixed(2);
-                  })()
-                : '0.00'
-            }`}
+            {campaign?.payment?.price && campaign.startDate && campaign.endDate
+              ? (() => {
+                  const days = Math.max(
+                    1,
+                    moment(campaign.endDate).diff(
+                      moment(campaign.startDate),
+                      'days'
+                    ) + 1
+                  );
+                  return formatFromUSD(campaign.payment.price / days);
+                })()
+              : formatFromUSD(0)}
           </Typography>
         </Card>
       </Grid>
@@ -351,7 +351,7 @@ const Advertisement: React.FC = () => {
             component="div"
             sx={{ color: theme.palette.text.secondary }}
           >
-            {(campaign?.payment?.price || 0).toFixed(2)}&nbsp;USD
+            {formatFromUSD(campaign?.payment?.price || 0)}
           </Typography>
         </Card>
       </Grid>

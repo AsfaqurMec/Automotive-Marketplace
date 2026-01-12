@@ -26,6 +26,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ShareVehicaleApi } from '@/lib/api/shareVehicale';
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
+import Price from '@/components/ui/Price';
 
 interface Dealer {
     _id: string;
@@ -137,7 +138,7 @@ const DealerPage: React.FC = () => {
               {error}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Please try again later
+              {t('pleaseTryAgainLater')}
             </Typography>
           </Paper>
         </Container>
@@ -172,7 +173,7 @@ const DealerPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh', pb: 6 }}>
+    <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh', py: 6 }}>
       <Container maxWidth="lg" sx={{ py: { xs: 0, md: 0 } }}>
         {/* Profile Header Card */}
         <Box
@@ -654,7 +655,7 @@ const DealerPage: React.FC = () => {
                               letterSpacing: '-0.01em',
                             }}
                           >
-                            ${vehicle.price.toLocaleString()}
+                            <Price amountUSD={Number(vehicle.price) || 0} />
                           </Typography>
                         </Box>
 

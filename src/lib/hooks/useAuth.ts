@@ -278,6 +278,8 @@ const useAuthState = create<AuthState>((set, get) => ({
   user: null, // Current user data
   isGettingLoggedIn: true, // Loading state during initial auth check
   isLoading: false, // Loading state for auth operations
+  isLoggingIn: false, // Loading state during login navigation
+  isLoggingOut: false, // Loading state during logout navigation
 
   // Set the initial loading state
   setIsGettingLoggedIn: (val) => {
@@ -287,6 +289,16 @@ const useAuthState = create<AuthState>((set, get) => ({
   // Set loading state for auth operations
   setIsLoading: (val) => {
     set({ isLoading: val });
+  },
+
+  // Set loading state for login navigation
+  setIsLoggingIn: (val) => {
+    set({ isLoggingIn: val });
+  },
+
+  // Set loading state for logout navigation
+  setIsLoggingOut: (val) => {
+    set({ isLoggingOut: val });
   },
 
   // Set user data
@@ -338,8 +350,12 @@ const useAuth = () => {
     user,
     isGettingLoggedIn,
     isLoading,
+    isLoggingIn,
+    isLoggingOut,
     setIsGettingLoggedIn,
     setIsLoading,
+    setIsLoggingIn,
+    setIsLoggingOut,
     setUser,
     login,
     userStatus,
@@ -412,13 +428,18 @@ const useAuth = () => {
     user,
     isGettingLoggedIn,
     isLoading,
+    isLoggingIn,
+    isLoggingOut,
     setUser,
     setIsLoading,
+    setIsLoggingIn,
+    setIsLoggingOut,
     refetchUser,
     login,
 
     userStatus,
     logout: async () => {
+      setIsLoggingOut(true);
       setIsLoading(true);
       await getLogout();
       localLogout();
@@ -430,6 +451,7 @@ const useAuth = () => {
       await queryClient.invalidateQueries({ queryKey: ['authStatus'] });
 
       setIsLoading(false);
+      // Keep isLoggingOut true until navigation completes (will be set to false in ClientLayout)
     },
   };
 };

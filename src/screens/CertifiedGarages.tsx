@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import NavigationMenu from '@/components/ui/NavigationButtons';
 import LocationSearchBar from '@/components/ui/LocationSearchBar';
 import colors from '@/components/styles';
@@ -7,6 +8,7 @@ import AutoShopCard from '@/components/ui/GarageCard';
 import GarageImage from '@/assets/Garage.png';
 
 const CertifiedGaragesComponent: React.FC = () => {
+  const { t } = useTranslation();
   const cars = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   const foreground = colors.foreground;
@@ -21,7 +23,7 @@ const CertifiedGaragesComponent: React.FC = () => {
       }}
     >
       <NavigationMenu />
-      <LocationSearchBar text={'Recommended Garages'} />
+      <LocationSearchBar text={t('recommendedGarages')} />
       <Box
         sx={{
           width: '85%',

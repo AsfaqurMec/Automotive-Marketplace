@@ -102,7 +102,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const queryClient = useQueryClient();
   // Remove local state - rely on server data only
   const likes = post?.likes?.length || 0;
-  const liked = post?.likes?.some((like: LikeInfo) => like?.likedByUser === user?._id);
+  const liked = post?.likes?.some((like: LikeInfo) => 
+    String(like?.likedByUser) === String(user?._id)
+  );
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [allCommentsModalOpen, setAllCommentsModalOpen] = useState(false);
@@ -115,16 +117,19 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   // Determine if dealerId is just a string (ObjectId) or already populated object
   const dealerIdIsString = typeof initialDealerId === 'string';
   const dealerIdStr = dealerIdIsString ? initialDealerId : initialDealerId?._id;
+//console.log('dealerIdStr', dealerIdStr);
 
   // Fetch dealer data if dealerId is just a string
   const { data: dealerData } = useQuery({
     queryKey: ['dealer', dealerIdStr],
     queryFn: () => getDealerById(dealerIdStr || ''),
-    enabled: !!dealerIdStr && dealerIdIsString,
+    enabled: !!dealerIdStr,
   });
+ // console.log('dealerData', dealerData?.data);
  // console.log('dealerData', dealerData);
   // Get dealer info from fetched data or initial data
-  const dealerId = dealerData?.data || (dealerIdIsString ? null : initialDealerId) || null;
+  const dealerId = dealerData?.data  || null;
+ // console.log('dealerId', dealerId);
 //console.log('dealerId', dealerId);
   // Get unique commenterIds that need fetching
   const commenterIdsToFetch = useMemo(() => 
@@ -141,7 +146,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const commenterQueries = useQueries({
     queries: commenterIdsToFetch.map((commenterId) => ({
       queryKey: ['user', commenterId],
-      queryFn: () => getUserById(commenterId),
+      queryFn: () => getDealerById(commenterId),
       enabled: !!commenterId,
     })),
   });
@@ -262,7 +267,16 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         flexWrap="wrap"
         gap={2}
       >
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box 
+          display="flex" 
+          alignItems="center" 
+          gap={2}
+          onClick={() => dealerId?._id && router.push(`/admin/dealer/${dealerId._id}`)}
+          sx={{ 
+            cursor: dealerId?._id ? 'pointer' : 'default',
+            '&:hover': dealerId?._id ? { opacity: 0.8 } : {}
+          }}
+        >
           <Avatar 
             src={(dealerId as any)?.profileImage || (dealerId as any)?.avatar || '/avatar.png'} 
             alt={dealerId?.fullName || (dealerId as any)?.name || 'User'} 
@@ -291,7 +305,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
             my: 2,
             borderRadius: 2,
             width: '100%',
-            height: { xs: 200, sm: 250, md: 300 },
+            height: { xs: 200, sm: 250, md: 400 },
             objectFit: 'cover',
           }}
         />
@@ -429,11 +443,33 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                       <Avatar
                         src={comment.user?.avatar || comment.user?.profileImage || '/avatar.png'}
                         alt={comment.user?.name || comment.user?.fullName || 'Anonymous'}
+                        onClick={() => {
+                          const profileId = comment.commenterId || comment.user?._id;
+                          if (profileId) router.push(`/user/${profileId}`);
+                        }}
+                        sx={{ 
+                          cursor: (comment.commenterId || comment.user?._id) ? 'pointer' : 'default',
+                          '&:hover': (comment.commenterId || comment.user?._id) ? { opacity: 0.8 } : {}
+                        }}
                       />
                     </ListItemAvatar>
                     <ListItemText
                       primary={
-                        <Typography variant="subtitle1" fontWeight="bold">
+                        <Typography 
+                          variant="subtitle1" 
+                          fontWeight="bold"
+                          onClick={() => {
+                            const profileId = comment.commenterId || comment.user?._id;
+                            if (profileId) router.push(`/admin/dealer/${profileId}`);
+                          }}
+                          sx={{ 
+                            cursor: (comment.commenterId || comment.user?._id) ? 'pointer' : 'default',
+                            '&:hover': (comment.commenterId || comment.user?._id) ? { 
+                              textDecoration: 'underline',
+                              opacity: 0.8 
+                            } : {}
+                          }}
+                        >
                           {comment.user?.name || comment.user?.fullName || 'Anonymous'}
                         </Typography>
                       }

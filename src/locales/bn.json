@@ -370,8 +370,26 @@
   "gridView": "গ্রিড (সারিতে ৩টি)",
   "flexView": "ফ্লেক্স (সারিতে ২টি)",
   "singleView": "একক (সম্পূর্ণ প্রস্থ)",
-  "failedToLoadVehicles": "যানবাহন লোড করতে ব্যর্থ",
-  "noVehiclesFound": "কোনো যানবাহন পাওয়া যায়নি"
+     "failedToLoadVehicles": "যানবাহন লোড করতে ব্যর্থ",
+     "noVehiclesFound": "কোনো যানবাহন পাওয়া যায়নি",
+     "sparePartsMarketplace": "স্পেয়ার পার্টস মার্কেটপ্লেস",
+     "recommendedGarages": "প্রস্তাবিত গ্যারেজ",
+     "recommendedAgencies": "প্রস্তাবিত এজেন্সি",
+     "rentVehicle": "যানবাহন ভাড়া",
+     "rentCar": "গাড়ি ভাড়া",
+     "vehiclePredictionTrends": "যানবাহন পূর্বাভাস ট্রেন্ড",
+     "hotVehicle": "হট যানবাহন",
+     "availability": "উপলব্ধতা",
+     "engine": "ইঞ্জিন",
+     "model": "মডেল",
+     "type": "টাইপ",
+     "brand": "ব্র্যান্ড",
+     "contactDealer": "ডিলারের সাথে যোগাযোগ",
+     "vehicleNotFound": "যানবাহন পাওয়া যায়নি",
+     "pleaseTryAgainLater": "অনুগ্রহ করে পরে আবার চেষ্টা করুন",
+     "search": "খুঁজুন",
+     "location": "অবস্থান",
+     "enterLocation": "অবস্থান লিখুন"
 }
 
 

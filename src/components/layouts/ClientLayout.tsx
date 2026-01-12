@@ -24,13 +24,53 @@ import i18n from '../../i18n';
 import { usePathname } from 'next/navigation';
 import { safeLocalStorage } from '../../lib/utils/secureStorage';
 import { CurrencyProvider } from '@/lib/hooks/CurrencyProvider';
+import { I18nextProvider } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import useAuth from '@/lib/hooks/useAuth';
+import CustomLoaderForComponent from '@/components/ui/CustomLoaderForComponent';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
 }
 
+// Component that handles auth loading states - must be inside QueryClientProvider
+function AuthLoaderHandler() {
+  const pathname = usePathname();
+  const { isLoggingIn, isLoggingOut, setIsLoggingIn, setIsLoggingOut } = useAuth();
+
+  // Clear loading states when navigation completes
+  useEffect(() => {
+    // If we're logging in and we've reached the dashboard, clear the loading state
+    if (isLoggingIn && pathname === '/admin/dashboard') {
+      // Small delay to ensure page is fully loaded
+      const timer = setTimeout(() => {
+        setIsLoggingIn(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+
+    // If we're logging out and we've reached the signin/home page, clear the loading state
+    if (isLoggingOut && (pathname === '/signin' || pathname === '/')) {
+      // Small delay to ensure page is fully loaded
+      const timer = setTimeout(() => {
+        setIsLoggingOut(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, isLoggingIn, isLoggingOut, setIsLoggingIn, setIsLoggingOut]);
+
+  // Show loader if logging in or out
+  if (isLoggingIn || isLoggingOut) {
+    return <CustomLoaderForComponent />;
+  }
+
+  return null;
+}
+
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
+  const { i18n: i18nInstance } = useTranslation();
+  const [isRTL, setIsRTL] = useState(i18nInstance.language === 'he');
 
   // Define routes where footer should be hidden (chat, admin, profile pages)
   const hideFooterPatterns = [
@@ -52,19 +92,33 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   // Initialize internationalization and RTL support
   useEffect(() => {
-    // Get language direction from secure storage or default to LTR
-    const dir =
-            typeof window !== 'undefined'
-              ? safeLocalStorage.getLanguage() === 'he'
-                ? 'rtl'
-                : 'ltr'
-              : 'ltr';
+    // Function to update document direction and language
+    const updateDocumentAttributes = () => {
+      const currentLang = i18n.language || 'en';
+      const dir = currentLang === 'he' ? 'rtl' : 'ltr';
+      setIsRTL(currentLang === 'he');
+      
+      if (typeof window !== 'undefined') {
+        document.documentElement.setAttribute('dir', dir);
+        document.documentElement.setAttribute('lang', currentLang);
+        // Update ToastContainer RTL
+        const toastContainer = document.querySelector('.Toastify');
+        if (toastContainer) {
+          (toastContainer as HTMLElement).setAttribute('dir', dir);
+        }
+      }
+    };
 
-    // Set document direction and language attributes
-    if (dir) {
-      document.documentElement.setAttribute('dir', dir);
-    }
-    document.documentElement.setAttribute('lang', i18n.language);
+    // Initial setup
+    updateDocumentAttributes();
+
+    // Listen for language changes
+    i18n.on('languageChanged', updateDocumentAttributes);
+
+    // Cleanup listener on unmount
+    return () => {
+      i18n.off('languageChanged', updateDocumentAttributes);
+    };
   }, []);
 
   return (
@@ -77,11 +131,16 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           <ThemeProvider theme={theme}>
             {/* React Query provider for data fetching */}
             <QueryClientProvider client={queryClient}>
-              {/* CSS baseline for consistent styling */}
-              <CssBaseline />
+              {/* I18n provider for translations */}
+              <I18nextProvider i18n={i18n}>
+                {/* CSS baseline for consistent styling */}
+                <CssBaseline />
 
-              {/* Main layout container with flexbox structure */}
-              <CurrencyProvider>
+                {/* Global loader for login/logout navigation - must be inside QueryClientProvider */}
+                <AuthLoaderHandler />
+
+                {/* Main layout container with flexbox structure */}
+                <CurrencyProvider>
                 <Box
                 sx={{
                   display: 'flex',
@@ -110,11 +169,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                 hideProgressBar
                 newestOnTop={false}
                 closeOnClick
-                rtl={false}
+                rtl={isRTL}
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
               />
+              </I18nextProvider>
             </QueryClientProvider>
           </ThemeProvider>
         </ColorModeContext.Provider>

@@ -10,14 +10,27 @@ import {
 } from 'react-icons/fa';
 import '../style/listingStatus.css';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '@/lib/hooks/CurrencyProvider';
 
 interface ListingItem {
   createdAt: string;
   status: string;
 }
 
-const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({ data, deleteCount }) => {
+interface SoldVehicleItem {
+  _id: string;
+  amount: number;
+  dealerID: string;
+  createdAt: string | Date;
+}
+
+const ListingStatus: React.FC<{ 
+  data: ListingItem[], 
+  deleteCount: number,
+  soldVehicles?: SoldVehicleItem[]
+}> = ({ data, deleteCount, soldVehicles = [] }) => {
   const { t } = useTranslation();
+  const { formatFromUSD } = useCurrency();
   const today = new Date();
 
   // new
@@ -56,6 +69,24 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
   // active
   const activeItems = data?.filter((item) => item.status === 'Available');
 
+  // sold vehicles calculations
+  const soldItems = data?.filter((item) => item.status === 'Sold');
+  const soldCount = soldItems?.length || 0;
+  
+  // Filter sold vehicles by dealerID
+  const internalBuyerVehicles = soldVehicles?.filter((sale) => 
+    sale.dealerID && sale.dealerID.trim() !== ''
+  ) || [];
+  
+  const externalBuyerVehicles = soldVehicles?.filter((sale) => 
+    !sale.dealerID || sale.dealerID.trim() === ''
+  ) || [];
+
+  // Calculate totals
+  const soldTotal = soldVehicles?.reduce((sum, sale) => sum + (sale.amount || 0), 0) || 0;
+  const internalBuyerTotal = internalBuyerVehicles.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+  const externalBuyerTotal = externalBuyerVehicles.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+
   return (
     <div className="listing-status-wrapper">
       <div className="listing-status-container">
@@ -68,7 +99,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <p className="card-subtext">
               {data?.length || 0} {t('listings')}
             </p>
-            <p className="card-price blue">₪ {data?.length || 0}</p>
+            <p className="card-price blue"> {data?.length || 0}</p>
           </div>
         </div>
 
@@ -81,7 +112,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <p className="card-subtext">
               {recentItems?.length || 0} {t('listings')}
             </p>
-            <p className="card-price blue">₪{recentItems?.length || 0}</p>
+            <p className="card-price blue">{recentItems?.length || 0}</p>
           </div>
         </div>
 
@@ -94,7 +125,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <p className="card-subtext">
               {activeItems?.length || 0} {t('listings')}
             </p>
-            <p className="card-price yellow">₪ {activeItems?.length || 0}</p>
+            <p className="card-price yellow"> {activeItems?.length || 0}</p>
           </div>
         </div>
 
@@ -107,7 +138,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <p className="card-subtext">
               {nearExpiryItems?.length || 0} {t('listings')}
             </p>
-            <p className="card-price yellow">₪ {nearExpiryItems?.length || 0}</p>
+            <p className="card-price yellow"> {nearExpiryItems?.length || 0}</p>
           </div>
         </div>
 
@@ -120,7 +151,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <p className="card-subtext">
               {expiaryItems?.length || 0} {t('listings')}
             </p>
-            <p className="card-price red">₪ {expiaryItems?.length || 0}</p>
+            <p className="card-price red">{expiaryItems?.length || 0}</p>
           </div>
         </div>
 
@@ -133,7 +164,7 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <p className="card-subtext">
               {deleteCount || 0} {t('listings')}
             </p>
-            <p className="card-price red">₪ {deleteCount || 0}</p>
+            <p className="card-price red"> {deleteCount || 0}</p>
           </div>
         </div>
 
@@ -142,9 +173,13 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <FaCheckCircle />
           </div>
           <div className="card-content">
-            <p className="card-label">{t('sold')}</p>
-            <p className="card-subtext">0 {t('listings')}</p>
-            <p className="card-price green">₪0</p>
+            <p className="card-label">{t('Sold')}</p>
+            <p className="card-subtext">
+              {soldVehicles?.length || soldCount} {t('listings')}
+            </p>
+            <p className="card-price green">
+              {formatFromUSD(soldTotal)}
+            </p>
           </div>
         </div>
 
@@ -153,9 +188,13 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <FaCheckCircle />
           </div>
           <div className="card-content">
-            <p className="card-label">{t('sold internal buyer')}</p>
-            <p className="card-subtext">0 {t('listings')}</p>
-            <p className="card-price green">₪0</p>
+            <p className="card-label">{t('Sold-Internal Buyer')}</p>
+            <p className="card-subtext">
+              {internalBuyerVehicles.length} {t('listings')}
+            </p>
+            <p className="card-price green">
+              {formatFromUSD(internalBuyerTotal)}
+            </p>
           </div>
         </div>
 
@@ -164,9 +203,13 @@ const ListingStatus: React.FC<{ data: ListingItem[], deleteCount: number }> = ({
             <FaCheckCircle />
           </div>
           <div className="card-content">
-            <p className="card-label">{t('sold external buyer')}</p>
-            <p className="card-subtext">0 {t('listings')}</p>
-            <p className="card-price green">₪0</p>
+            <p className="card-label">{t('Sold-External Buyer')}</p>
+            <p className="card-subtext">
+              {externalBuyerVehicles.length} {t('listings')}
+            </p>
+            <p className="card-price green">
+              {formatFromUSD(externalBuyerTotal)}
+            </p>
           </div>
         </div>
 

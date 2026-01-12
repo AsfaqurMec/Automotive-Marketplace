@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import NavigationMenu from '@/components/ui/NavigationButtons';
 import MenuList from '@/components/ui/MenuItems';
 import LocationSearchBar from '@/components/ui/LocationSearchBar';
@@ -10,6 +11,7 @@ import MarketPlaceImage from '@/assets/MarketPlaceImage.png';
 const cars = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 const MarketPlaceComponent: React.FC = () => {
+  const { t } = useTranslation();
   const foreground = colors.foreground;
   return (
     <Box
@@ -23,8 +25,8 @@ const MarketPlaceComponent: React.FC = () => {
       }}
     >
       <NavigationMenu />
-      <LocationSearchBar text={'Spare Parts Marketplace'} />
-      <MenuList menuItems={['Availability', 'Engine', 'Model', 'Type', 'Brand']} />
+      <LocationSearchBar text={t('sparePartsMarketplace')} />
+      <MenuList menuItems={[t('availability'), t('engine'), t('model'), t('type'), t('brand')]} />
       <Box
         sx={{
           width: '85%',

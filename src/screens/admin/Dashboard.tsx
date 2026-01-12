@@ -10,11 +10,13 @@ import { getDashboardSummary } from '@/lib/api/dealer';
 import { useQuery } from '@tanstack/react-query';
 import useAuth from '@/lib/hooks/useAuth';
 import { FaChartLine, FaCar } from 'react-icons/fa';
+import { useCurrency } from '@/lib/hooks/CurrencyProvider';
 
 const DashboardScreen: React.FC = () => {
   const { t } = useTranslation();
   const { text, textBlack, foreground, primary } = colors;
   const { user } = useAuth();
+  const { formatFromUSD } = useCurrency();
 
   const {
     data: summary,
@@ -167,14 +169,9 @@ const DashboardScreen: React.FC = () => {
     chartData: transformSalesData(),
   };
 
-  // Format currency
+  // Format currency using currency context
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+    return formatFromUSD(amount);
   };
 
   return (

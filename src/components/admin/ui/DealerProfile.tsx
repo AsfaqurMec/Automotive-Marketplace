@@ -23,6 +23,7 @@ import { Business, Email, Phone, LocationOn, VerifiedUser, Star } from '@mui/ico
 import { getDealerById } from '@/lib/api/dealer';
 import { Dealer } from '@/types';
 import Link from 'next/link';
+import Price from '@/components/ui/Price';
 
 interface DealerProfileProps {
   dealerId: string;
@@ -256,7 +257,7 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
             color="success.main"
             fontWeight={700}
           >
-            ${car.price?.toLocaleString()}{" "}
+            <Price amountUSD={Number(car.price) || 0} />{" "}
             {car.priceNegotiable && (
               <Typography
                 component="span"

@@ -649,7 +649,6 @@ import {
 import logo from '@/assets/navbarLogo.png';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useRouter } from 'next/navigation';
-import CustomLoaderForComponent from '../ui/CustomLoaderForComponent';
 import useAuth from '@/lib/hooks/useAuth';
 import i18n from '@/i18n';
 import usePermission from '@/lib/hooks/usePermission';
@@ -676,7 +675,7 @@ export let clearNavbarUserData: () => void = () => {};
 function ResponsiveAppBar(): React.JSX.Element {
   const theme = useTheme();
   const can = usePermission();
-  const { user, refetchUser, isLoading, logout, setIsLoading} = useAuth();
+  const { user, refetchUser, isLoading, logout, setIsLoading, isLoggingOut } = useAuth();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -688,7 +687,6 @@ function ResponsiveAppBar(): React.JSX.Element {
   const { t } = useTranslation();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [hasMounted, setHasMounted] = useState<boolean>(false);
-  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
   // User data available
   useEffect(() => {
     setHasMounted(true);
@@ -777,21 +775,16 @@ function ResponsiveAppBar(): React.JSX.Element {
 
   const handleLogout = async () => {
     try {
-      setIsLoggingOut(true);
       setAnchorElUser(null);
       setUserData(null);
       removeUserGlobally();
-      // Add a minimum delay to ensure loading screen is visible
-      const [logoutResult] = await Promise.all([
-        logout(),
-        new Promise(resolve => setTimeout(resolve, 2500)),
-      ]);
+      // logout() will set isLoggingOut to true
+      await logout();
       router.push('/signin');
+      // isLoggingOut will be cleared when navigation completes in ClientLayout
     } catch {
       // Still redirect even if logout fails
       router.push('/signin');
-    } finally {
-      setIsLoggingOut(false);
     }
   };
 
@@ -818,7 +811,6 @@ function ResponsiveAppBar(): React.JSX.Element {
 
   return (
     <>
-      {(isLoading || isLoggingOut) && <CustomLoaderForComponent />}
       <AppBar
         position="static"
         sx={{

@@ -193,7 +193,13 @@ const CommunityScreen: React.FC = () => {
                           createdAt: post.createdAt,
                           dealerId: post.dealerId || post.author || '',
                           views: post.views || 0,
-                          likes: post.likes.map(like => ({ _id: like, likedByUser: like })),
+                          likes: Array.isArray(post.likes) 
+                            ? post.likes.map((like: any) => 
+                                typeof like === 'string' 
+                                  ? { _id: like, likedByUser: like }
+                                  : { _id: like._id || like.likedByUser, likedByUser: like.likedByUser || like }
+                              )
+                            : [],
                           comments: post.comments.map(comment => ({
                             _id: comment._id,
                             text: comment.text || comment.content || '',
@@ -227,7 +233,13 @@ const CommunityScreen: React.FC = () => {
                         createdAt: postById.data.createdAt,
                         dealerId: postById.data.dealerId || postById.data.author || '',
                         views: postById.data.views || 0,
-                        likes: postById.data.likes.map(like => ({ _id: like, likedByUser: like })),
+                        likes: Array.isArray(postById.data.likes) 
+                          ? postById.data.likes.map((like: any) => 
+                              typeof like === 'string' 
+                                ? { _id: like, likedByUser: like }
+                                : { _id: like._id || like.likedByUser, likedByUser: like.likedByUser || like }
+                            )
+                          : [],
                         comments: postById.data.comments.map(comment => ({
                           _id: comment._id,
                           text: comment.content || comment.text || '',

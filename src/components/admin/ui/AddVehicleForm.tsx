@@ -36,6 +36,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import { CarDetails, User } from '@/types';
 import useAuth from '@/lib/hooks/useAuth';
+import { useCurrency } from '@/lib/hooks/CurrencyProvider';
 const brands = {
   TOYOTA: [
     'Corolla',
@@ -172,6 +173,7 @@ const validationSchema = Yup.object({
 const AddVehicleForm: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const { formatFromUSD } = useCurrency();
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string>('');
@@ -558,7 +560,7 @@ const AddVehicleForm: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <FaShekelSign />
+                    {/* <FaShekelSign /> */}
                   </InputAdornment>
                 ),
               }}
@@ -566,7 +568,7 @@ const AddVehicleForm: React.FC = () => {
           </Grid>
 
           <Grid item xs={7} sm={3}>
-            <Button
+            {/* <Button
               fullWidth
               variant="outlined"
               onClick={handleSuggestPrice}
@@ -574,7 +576,7 @@ const AddVehicleForm: React.FC = () => {
               sx={{ height: '56px' }}
             >
               {t('suggest')}
-            </Button>
+            </Button> */}
           </Grid>
           <Grid item xs={7} sm={4}>
             <FormControlLabel
@@ -1019,7 +1021,7 @@ const AddVehicleForm: React.FC = () => {
                   variant="h4"
                   sx={{ fontWeight: 'bold', my: 1, color: 'primary.main' }}
                 >
-                  ₪{suggestionData.minPrice.toLocaleString()} - ₪{suggestionData.maxPrice.toLocaleString()}
+                  {formatFromUSD(suggestionData.minPrice)} - {formatFromUSD(suggestionData.maxPrice)}
                 </Typography>
 
                 <Divider sx={{ my: 2 }} />

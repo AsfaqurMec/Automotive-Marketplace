@@ -96,8 +96,12 @@ export interface AuthState {
   user: User | null;
   isGettingLoggedIn: boolean;
   isLoading: boolean;
+  isLoggingIn: boolean; // Loading state during login navigation
+  isLoggingOut: boolean; // Loading state during logout navigation
   setIsGettingLoggedIn: (val: boolean) => void;
   setIsLoading: (val: boolean) => void;
+  setIsLoggingIn: (val: boolean) => void;
+  setIsLoggingOut: (val: boolean) => void;
   setUser: (user: User | null) => void;
   updateUser: (userUpdate: Partial<User>) => void;
   login: (user: User, token?: string) => void;

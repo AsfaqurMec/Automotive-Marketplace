@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 import CarDetails from '@/screens/SearchItem';
 import useAuth from '@/lib/hooks/useAuth';
@@ -9,6 +10,7 @@ import useAuth from '@/lib/hooks/useAuth';
 const ALLOWED_ROLES = new Set(['admin', 'superAdmin', 'dealer']);
 
 export default function Page(): React.ReactElement {
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string | string[] }>();
   const vehicleSlug = Array.isArray(slug) ? slug[0] : slug ?? null;
 
@@ -54,7 +56,7 @@ export default function Page(): React.ReactElement {
   }, [isAuthorized, isGettingLoggedIn, router, user]);
 
   if (!vehicleSlug) {
-    return <div>Vehicle not found</div>;
+    return <div>{t('vehicleNotFound')}</div>;
   }
 
   // Show loading state while checking authentication

@@ -49,7 +49,7 @@ interface LoginResponse {
 const LoginPage: React.FC = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { login: loginUser, userStatus } = useAuth();
+  const { login: loginUser, userStatus, setIsLoggingIn } = useAuth();
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [showPassword, setShowPassword] = React.useState(false);
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -71,6 +71,9 @@ const LoginPage: React.FC = () => {
     mutationFn: (data: LoginData) => getLogin(data),
 
     onSuccess: async (data: LoginResponse) => {
+      // Set loading state for login navigation
+      setIsLoggingIn(true);
+      
       userStatus();
       formik.resetForm();
       setErrorMessage(null);
@@ -89,13 +92,14 @@ const LoginPage: React.FC = () => {
       // Refetch the auth status manually
       await queryClient.invalidateQueries({ queryKey: ['authStatus'] });
 
+      // Navigate to dashboard - loading state will be cleared when navigation completes
       router.push('/admin/dashboard');
     },
 
-    onError: (error: { response?: { data?: { message?: string } } }) => {
+    onError: (error: { response?: { data?: { message?: string }; status?: number } }) => {
       const message = error?.response?.data?.message || 'Something went wrong';
-     // setErrorMessage(message);
-       toast.error("Invalid email or password");
+      setErrorMessage(message);
+      toast.error(message);
     },
   });
   const formik = useFormik({
