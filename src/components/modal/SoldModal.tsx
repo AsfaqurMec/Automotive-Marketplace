@@ -160,7 +160,7 @@ const SoldModal: React.FC<SoldModalProps> = ({
   };
 
   const handleSubmit = () => {
-    console.log('handleSubmit called', { formData, buyerType, selectedDealer });
+  //  console.log('handleSubmit called', { formData, buyerType, selectedDealer });
     
     // Validation
     if (!formData.amount || formData.amount <= 0) {
@@ -182,7 +182,7 @@ const SoldModal: React.FC<SoldModalProps> = ({
       sellerId: formData.sellerId || sellerId,
     };
 
-    console.log('Calling onConfirm with data:', submitData);
+  //  console.log('Calling onConfirm with data:', submitData);
     // Call the API - pass vehicleId as second parameter for safety
     onConfirm(submitData, vehicleId);
   };
@@ -195,15 +195,15 @@ const SoldModal: React.FC<SoldModalProps> = ({
       !!formData.contact &&
       (buyerType === 'external' || (buyerType === 'internal' && !!formData.dealerID));
     
-    console.log('isFormValid check:', {
-      valid,
-      amount: formData.amount,
-      name: formData.name,
-      email: formData.email,
-      contact: formData.contact,
-      dealerID: formData.dealerID,
-      buyerType,
-    });
+  //  console.log('isFormValid check:', {
+  //    valid,
+  //    amount: formData.amount,
+  //    name: formData.name,
+  //    email: formData.email,
+  //    contact: formData.contact,
+  //    dealerID: formData.dealerID,
+  //    buyerType,
+  //  });
     
     return valid;
   };

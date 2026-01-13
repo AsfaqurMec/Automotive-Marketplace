@@ -11,10 +11,13 @@ import {
   FormControl,
   FormLabel,
   Autocomplete,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import { Formik, Form } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+import { useState, useEffect } from 'react';
 import useAuth from '@/lib/hooks/useAuth';
 
 const leadStatuses = [
@@ -50,6 +53,13 @@ type DealerArray = DealerData[];
 const CreateLeadModal = ({ open, onClose, onSubmit, dealer }: { open: boolean, onClose: () => void, onSubmit: (values: LeadFormValues) => void, dealer: DealerArray }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const [assignToAll, setAssignToAll] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setAssignToAll(false);
+    }
+  }, [open]);
   const initialValues: LeadFormValues = {
     fullName: user?.fullName || '',
     email: user?.email || '',
@@ -201,28 +211,50 @@ const CreateLeadModal = ({ open, onClose, onSubmit, dealer }: { open: boolean, o
 
                 <Grid item xs={12}>
                   <FormControl fullWidth>
-                    <FormLabel>{t('assignDealer')}</FormLabel>
-                    <Autocomplete
-                      options={dealer}
-                      value={values.assignedTo ? dealer.find((d: DealerData) => d._id === values.assignedTo) || null : null}
-                      onChange={(_, value) => {
-                        const dealerId = value ? value._id : undefined;
-                        setFieldValue('assignedTo', dealerId);
-                      }}
-                      onBlur={handleBlur}
-                      getOptionLabel={(option: DealerData) => `${option.fullName || 'N/A'} - ${option.companyName || 'N/A'}`}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          name="assignedTo"
-                          placeholder="Select a dealer"
-                          error={Boolean(touched.assignedTo && errors.assignedTo)}
-                          helperText={touched.assignedTo && (errors.assignedTo as string)}
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={assignToAll}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            setAssignToAll(isChecked);
+                            if (isChecked) {
+                              setFieldValue('assignedTo', undefined);
+                            }
+                          }}
                         />
-                      )}
+                      }
+                      label={t('Assign to All') || 'Assign to All'}
                     />
                   </FormControl>
                 </Grid>
+
+                {!assignToAll && (
+                  <Grid item xs={12}>
+                    <FormControl fullWidth>
+                      <FormLabel>{t('assignDealer')}</FormLabel>
+                      <Autocomplete
+                        options={dealer}
+                        value={values.assignedTo ? dealer.find((d: DealerData) => d._id === values.assignedTo) || null : null}
+                        onChange={(_, value) => {
+                          const dealerId = value ? value._id : undefined;
+                          setFieldValue('assignedTo', dealerId);
+                        }}
+                        onBlur={handleBlur}
+                        getOptionLabel={(option: DealerData) => `${option.fullName || 'N/A'} - ${option.companyName || 'N/A'}`}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            name="assignedTo"
+                            placeholder="Select a dealer"
+                            error={Boolean(touched.assignedTo && errors.assignedTo)}
+                            helperText={touched.assignedTo && (errors.assignedTo as string)}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                  </Grid>
+                )}
               </Grid>
 
               <DialogActions sx={{ mt: 2 }}>

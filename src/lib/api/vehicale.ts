@@ -107,11 +107,11 @@ export const vehicaleApi = {
   },
 
   markVehicleAsSold: async ({ id, soldData, user }: { id: string, soldData: Record<string, unknown>, user: User }) => {
-    console.log('markVehicleAsSold API called', { id, soldData, user });
+   // console.log('markVehicleAsSold API called', { id, soldData, user });
     authorize(user, 'car', 'edit');
-    console.log('Making POST request to:', `/${id}/sold`);
+   // console.log('Making POST request to:', `/${id}/sold`);
     const response = await vehicaleInstance.post(`/${id}/sold`, soldData);
-    console.log('API response:', response.data);
+    //console.log('API response:', response.data);
     return response.data;
   },
 };

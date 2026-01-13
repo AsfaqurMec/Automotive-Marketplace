@@ -2253,7 +2253,7 @@ async function generateDoc() {
     const outputPath = path.join(outputDir, 'NextDeal_Project_Report.docx');
     fs.writeFileSync(outputPath, buffer);
     
-    console.log(`✅ Word document generated successfully at: ${outputPath}`);
+  //  console.log(`✅ Word document generated successfully at: ${outputPath}`);
   } catch (error) {
     console.error('❌ Error generating document:', error);
     process.exit(1);

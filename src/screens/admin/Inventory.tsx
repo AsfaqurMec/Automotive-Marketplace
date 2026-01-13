@@ -163,7 +163,7 @@ const InventoryComponent: React.FC = () => {
     },
     enabled: !!user?._id,
   });
-  console.log(soldVehiclesData);
+  //console.log(soldVehiclesData);
   
   const soldVehicles = useMemo(() => {
     if (!soldVehiclesData?.data?.data) return [];
@@ -381,7 +381,7 @@ const InventoryComponent: React.FC = () => {
   };
 
   const handleSoldConfirm = (soldData: SoldData, vehicleId?: string) => {
-    console.log('handleSoldConfirm called', { soldData, selectedVehicleForStatus, vehicleId });
+  //  console.log('handleSoldConfirm called', { soldData, selectedVehicleForStatus, vehicleId });
     
     // Get vehicle ID from selectedVehicleForStatus or from parameter
     const id = selectedVehicleForStatus?._id || vehicleId;
@@ -391,7 +391,7 @@ const InventoryComponent: React.FC = () => {
       return;
     }
     
-    console.log('Calling markAsSoldMutation with vehicle ID:', id);
+   // console.log('Calling markAsSoldMutation with vehicle ID:', id);
     markAsSoldMutation({
       id,
       soldData,

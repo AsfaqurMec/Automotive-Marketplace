@@ -290,16 +290,16 @@ const SignupPage = ({ type }: { type: string }) => {
       const formData = new FormData();
       
       // Log all text fields
-      console.log('=== SIGNUP FORM DATA BEING SENT ===');
-      console.log('Text Fields:');
-      console.log('  firstName:', values.firstName);
-      console.log('  lastName:', values.lastName);
-      console.log('  email:', values.email);
-      console.log('  password:', values.password ? '***' : '');
-      console.log('  confirmPassword:', values.confirmPassword ? '***' : '');
-      console.log('  bankAccountInfo:', values.bankAccountInfo);
-      console.log('  type:', type || 'dealer');
-      console.log('  status: inactive');
+    //  console.log('=== SIGNUP FORM DATA BEING SENT ===');
+    //  console.log('Text Fields:');
+    //  console.log('  firstName:', values.firstName);
+    //  console.log('  lastName:', values.lastName);
+    //  console.log('  email:', values.email);
+    //  console.log('  password:', values.password ? '***' : '');
+    //  console.log('  confirmPassword:', values.confirmPassword ? '***' : '');
+    //  console.log('  bankAccountInfo:', values.bankAccountInfo);
+    //  console.log('  type:', type || 'dealer');
+    //  console.log('  status: inactive');
       
       formData.append('firstName', values.firstName);
       formData.append('lastName', values.lastName);
@@ -324,15 +324,15 @@ const SignupPage = ({ type }: { type: string }) => {
         'authorizationLetter',
       ];
 
-      console.log('Files:');
+    //  console.log('Files:');
       fileFields.forEach((field) => {
         const file = values[field];
         if (file) {
-          console.log(`  ${field}:`, {
+        //   console.log(`  ${field}:`, {
             name: file.name,
-            size: file.size,
-            type: file.type,
-          });
+          //  size: file.size,
+          //  type: file.type,
+          //});
           formData.append(field, file);
         } else {
           console.log(`  ${field}: not provided`);
@@ -340,7 +340,7 @@ const SignupPage = ({ type }: { type: string }) => {
       });
       
       // Log FormData entries (for debugging)
-      console.log('FormData entries:');
+   //   console.log('FormData entries:');
       for (const [key, value] of formData.entries()) {
         if (value instanceof File) {
           console.log(`  ${key}:`, {
@@ -352,7 +352,7 @@ const SignupPage = ({ type }: { type: string }) => {
           console.log(`  ${key}:`, value);
         }
       }
-      console.log('=== END OF FORM DATA ===');
+   //   console.log('=== END OF FORM DATA ===');
 
       mutate(formData);
     },
