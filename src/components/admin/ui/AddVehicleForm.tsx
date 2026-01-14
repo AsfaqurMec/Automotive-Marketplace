@@ -269,12 +269,26 @@ const AddVehicleForm: React.FC = () => {
     e.preventDefault();
     const allFiles = Array.from(e.dataTransfer.files);
 
+    // Validate image format (JPEG, JPG, PNG only)
+    const validFormatFiles = allFiles.filter((file) => isValidImageFormat(file));
+    const invalidFormatFiles = allFiles.filter((file) => !isValidImageFormat(file));
+
+    if (invalidFormatFiles.length > 0) {
+      toast.error(
+        `${invalidFormatFiles.length} file(s) are not in a supported format. Only JPEG, JPG, and PNG images are allowed.`,
+      );
+    }
+
     // Separate files by size
-    const validFiles = allFiles.filter((file) => file.size < MAX_SIZE);
-    const largeFiles = allFiles.filter((file) => file.size >= MAX_SIZE);
+    const validFiles = validFormatFiles.filter((file) => file.size < MAX_SIZE);
+    const largeFiles = validFormatFiles.filter((file) => file.size >= MAX_SIZE);
 
     if (largeFiles.length > 0) {
-      toast.error('Some files exceed the 5 MB size limit and were not added.');
+      toast.error(`${largeFiles.length} image(s) exceed the 5 MB size limit and were not added.`);
+    }
+
+    if (validFiles.length > 0) {
+      toast.success(`${validFiles.length} image(s) added successfully.`);
     }
 
     setImageFiles((prev) => [...prev, ...validFiles]);
@@ -284,19 +298,136 @@ const AddVehicleForm: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const allFiles = Array.from(e.target.files as FileList);
 
-    const validFiles = allFiles.filter((file) => file.size < MAX_SIZE);
-    const largeFiles = allFiles.filter((file) => file.size >= MAX_SIZE);
+    // Validate image format (JPEG, JPG, PNG only)
+    const validFormatFiles = allFiles.filter((file) => isValidImageFormat(file));
+    const invalidFormatFiles = allFiles.filter((file) => !isValidImageFormat(file));
+
+    if (invalidFormatFiles.length > 0) {
+      toast.error(
+        `${invalidFormatFiles.length} file(s) are not in a supported format. Only JPEG, JPG, and PNG images are allowed.`,
+      );
+    }
+
+    // Separate files by size
+    const validFiles = validFormatFiles.filter((file) => file.size < MAX_SIZE);
+    const largeFiles = validFormatFiles.filter((file) => file.size >= MAX_SIZE);
 
     if (largeFiles.length > 0) {
-      toast.error('Some files exceed the 5 MB size limit and were not added.');
+      toast.error(`${largeFiles.length} image(s) exceed the 5 MB size limit and were not added.`);
+    }
+
+    if (validFiles.length > 0) {
+      toast.success(`${validFiles.length} image(s) added successfully.`);
     }
 
     setImageFiles((prev) => [...prev, ...validFiles]);
     setPreviewUrls((prev) => [...prev, ...validFiles.map((file) => URL.createObjectURL(file))]);
+    
+    // Reset input to allow selecting the same file again
+    if (e.target) {
+      e.target.value = '';
+    }
   };
 
   const handleClickUpload = () => {
     fileInputRef.current?.click();
+  };
+
+  // Helper function to validate image format (JPEG, JPG, PNG only)
+  const isValidImageFormat = (file: File): boolean => {
+    const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const validExtensions = ['.jpeg', '.jpg', '.png'];
+    
+    // Check MIME type
+    if (validMimeTypes.includes(file.type.toLowerCase())) {
+      return true;
+    }
+    
+    // Fallback: check file extension
+    const fileName = file.name.toLowerCase();
+    return validExtensions.some(ext => fileName.endsWith(ext));
+  };
+
+  // Helper function to extract all error messages from formik errors
+  const getAllErrorMessages = (errors: any): string[] => {
+    const errorMessages: string[] = [];
+    
+    const extractErrors = (obj: any, prefix = '') => {
+      Object.keys(obj).forEach((key) => {
+        const value = obj[key];
+        const fieldName = prefix ? `${prefix}.${key}` : key;
+        
+        if (typeof value === 'string') {
+          errorMessages.push(`${fieldName}: ${value}`);
+        } else if (typeof value === 'object' && value !== null) {
+          extractErrors(value, fieldName);
+        }
+      });
+    };
+    
+    extractErrors(errors);
+    return errorMessages;
+  };
+
+  // Helper function to check required fields and return missing ones
+  const checkRequiredFields = (values: any): string[] => {
+    const missingFields: string[] = [];
+    
+    // Basic required fields
+    if (!values.title || values.title.trim() === '') {
+      missingFields.push('Title');
+    }
+    if (!values.description || values.description.trim() === '') {
+      missingFields.push('Description');
+    }
+    if (!values.price || values.price === '') {
+      missingFields.push('Price');
+    }
+    if (!values.brand || values.brand === '') {
+      missingFields.push('Brand');
+    }
+    if (!values.model || values.model === '') {
+      missingFields.push('Model');
+    }
+    if (!values.year || values.year === '') {
+      missingFields.push('Year');
+    }
+    if (!values.mileage || values.mileage === '') {
+      missingFields.push('Mileage');
+    }
+    if (!values.fuelType || values.fuelType === '') {
+      missingFields.push('Fuel Type');
+    }
+    if (!values.transmission || values.transmission === '') {
+      missingFields.push('Transmission');
+    }
+    if (!values.condition || values.condition === '') {
+      missingFields.push('Condition');
+    }
+    
+    // Location fields
+    if (!values.location?.country || values.location.country.trim() === '') {
+      missingFields.push('Country');
+    }
+    if (!values.location?.state || values.location.state.trim() === '') {
+      missingFields.push('State');
+    }
+    if (!values.location?.city || values.location.city.trim() === '') {
+      missingFields.push('City');
+    }
+    
+    // Contact info fields
+    if (!values.contactInfo?.name || values.contactInfo.name.trim() === '') {
+      missingFields.push('Contact Name');
+    }
+    if (!values.contactInfo?.phone || values.contactInfo.phone.trim() === '') {
+      missingFields.push('Phone');
+    }
+    if (!values.contactInfo?.email || values.contactInfo.email.trim() === '') {
+      missingFields.push('Email');
+    }
+    
+    return missingFields;
   };
 
   const formik = useFormik({
@@ -333,12 +464,10 @@ const AddVehicleForm: React.FC = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      // Check if form is valid
-      if (Object.keys(formik.errors).length > 0) {
-        toast.error('Please fix form errors before submitting');
-        return;
-      }
-
+      // if (Object.keys(formik.errors).length > 0) {
+      //   toast.error('Please fix form errors before submitting');
+      //   return;
+      // }
       const formData = new FormData();
 
       // Basic string/number fields
@@ -399,6 +528,84 @@ const AddVehicleForm: React.FC = () => {
     },
   });
 
+  // Custom submit handler that validates and shows toasts
+  const handleFormSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
+
+    // Validate images first
+    if (!imageFiles || imageFiles.length === 0) {
+      toast.error('Please add at least one image before submitting.');
+      return;
+    }
+
+    // Get current form values
+    const values = formik.values;
+
+    // Check required fields first
+    const missingFields = checkRequiredFields(values);
+    
+    if (missingFields.length > 0) {
+      // Show toast for each missing required field
+      if (missingFields.length === 1) {
+        toast.error(`${missingFields[0]} is required. Please fill in this field.`);
+        // Show additional information paragraph
+        setTimeout(() => {
+          toast.info(
+            `Please complete the ${missingFields[0]} field before submitting the form. All required fields must be filled to create a vehicle listing.`,
+            { autoClose: 5000 }
+          );
+        }, 500);
+      } else {
+        // Show main error with count
+        toast.error(`Please fill in ${missingFields.length} required fields: ${missingFields.join(', ')}`);
+        
+        // Show paragraph with additional information after the error toast
+        // setTimeout(() => {
+        //   toast.info(
+        //     `Please complete all required fields (${missingFields.join(', ')}) before submitting. All required fields are marked with an asterisk (*) and must be filled to create a vehicle listing.`,
+        //     { autoClose: 6000 }
+        //   );
+        // }, 500);
+      }
+      return;
+    }
+
+    // Validate form fields with Formik
+    const errors = await formik.validateForm();
+    
+    if (Object.keys(errors).length > 0) {
+      const errorMessages = getAllErrorMessages(errors);
+      
+      if (errorMessages.length > 0) {
+        // Show first error as main toast, and if there are more, show count
+        if (errorMessages.length === 1) {
+          toast.error(`Validation error: ${errorMessages[0]}`);
+        } else {
+          toast.error(`Please fix ${errorMessages.length} validation errors. First error: ${errorMessages[0]}`);
+          // Optionally show additional errors as warnings
+          errorMessages.slice(1, 4).forEach((msg, idx) => {
+            setTimeout(() => {
+              toast.warn(`${idx + 2}. ${msg}`, { autoClose: 3000 });
+            }, idx * 500);
+          });
+        }
+      } else {
+        toast.error('Please fix all form errors before submitting.');
+      }
+      return;
+    }
+
+    // If validation passes, proceed with form submission
+    // Call the actual onSubmit handler
+    if (e) {
+      formik.handleSubmit(e);
+    } else {
+      formik.handleSubmit();
+    }
+  };
+
   function getTransmissionType(transmission: string) {
     if (!transmission) return null;
 
@@ -430,7 +637,7 @@ const AddVehicleForm: React.FC = () => {
   const handleVinFetch = async () => {
     const vin = formik.values.vinNumber;
     if (!vin) {
-      alert('Please enter a VIN.');
+      toast.error('Please enter a VIN number before fetching data.');
       return;
     }
 
@@ -491,7 +698,7 @@ const AddVehicleForm: React.FC = () => {
         {t('postCarListing')}
       </Typography>
 
-      <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
+      <form onSubmit={handleFormSubmit} encType="multipart/form-data">
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -550,7 +757,7 @@ const AddVehicleForm: React.FC = () => {
           <Grid item xs={12} sm={3}>
             <TextField
               fullWidth
-              label={t('price')}
+              label={t('price (USD)')}
               type="number"
               name="price"
               value={formik.values.price}
@@ -943,10 +1150,18 @@ const AddVehicleForm: React.FC = () => {
                           e.stopPropagation();
                           const updatedPreviews = [...previewUrls];
                           const updatedFiles = [...imageFiles];
+                          const isLastImage = updatedPreviews.length === 1;
+                          
                           updatedPreviews.splice(index, 1);
                           updatedFiles.splice(index, 1);
                           setPreviewUrls(updatedPreviews);
                           setImageFiles(updatedFiles);
+                          
+                          if (isLastImage) {
+                            toast.warn('Last image removed. Please add at least one image before submitting.');
+                          } else {
+                            toast.info('Image removed successfully.');
+                          }
                         }}
                         sx={{
                           position: 'absolute',
@@ -979,7 +1194,7 @@ const AddVehicleForm: React.FC = () => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png,.jpeg,.jpg,.png"
                   multiple
                   hidden
                   onChange={handleFileChange}

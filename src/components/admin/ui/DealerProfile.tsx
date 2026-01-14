@@ -20,10 +20,13 @@ import {
   Divider,
 } from '@mui/material';
 import { Business, Email, Phone, LocationOn, VerifiedUser, Star } from '@mui/icons-material';
+import { MdChat } from 'react-icons/md';
 import { getDealerById } from '@/lib/api/dealer';
 import { Dealer } from '@/types';
 import Link from 'next/link';
 import Price from '@/components/ui/Price';
+import useAuth from '@/lib/hooks/useAuth';
+import DealerChatModal from '@/components/modal/DealerChatModal';
 
 interface DealerProfileProps {
   dealerId: string;
@@ -49,6 +52,8 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
+  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!dealerId) return;
@@ -76,6 +81,14 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
     // Add your message sending logic here
 
     handleCloseMessageDialog();
+  };
+
+  const handleChatWithDealer = () => {
+    setChatModalOpen(true);
+  };
+
+  const handleCloseChatModal = () => {
+    setChatModalOpen(false);
   };
 
   if (loading)
@@ -154,15 +167,26 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
                                         `${dealer.address.street}, ${dealer.address.city}, ${dealer.address.state} ${dealer.address.zipCode}`}
                 </Typography>
               </Box>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Email />}
-                onClick={handleOpenMessageDialog}
-                sx={{ mt: 2 }}
-              >
-                                Send Message
-              </Button>
+              <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Email />}
+                  onClick={handleOpenMessageDialog}
+                >
+                  Send Email
+                </Button>
+                {user && (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<MdChat />}
+                    onClick={handleChatWithDealer}
+                  >
+                    Create Chat
+                  </Button>
+                )}
+              </Box>
             </Grid>
 
             {/* Right Column */}
@@ -445,6 +469,12 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
           <Button onClick={handleSendMessage}>Send Message</Button>
         </DialogActions>
       </Dialog>
+
+      <DealerChatModal
+        open={chatModalOpen}
+        dealer={dealer}
+        onClose={handleCloseChatModal}
+      />
     </Box>
   );
 };
