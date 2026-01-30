@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Avatar,
   Button,
@@ -19,7 +19,7 @@ import {
   Box,
   Divider,
 } from '@mui/material';
-import { Business, Email, Phone, LocationOn, VerifiedUser, Star } from '@mui/icons-material';
+import { Business, Email, Phone, LocationOn, VerifiedUser, Star, Edit } from '@mui/icons-material';
 import { MdChat } from 'react-icons/md';
 import { getDealerById } from '@/lib/api/dealer';
 import { Dealer } from '@/types';
@@ -27,6 +27,9 @@ import Link from 'next/link';
 import Price from '@/components/ui/Price';
 import useAuth from '@/lib/hooks/useAuth';
 import DealerChatModal from '@/components/modal/DealerChatModal';
+import { updateDealer } from '@/lib/api/users';
+import { updateUser } from '@/lib/api/auth';
+import { toast } from 'react-toastify';
 
 interface DealerProfileProps {
   dealerId: string;
@@ -53,7 +56,30 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
   const [error, setError] = useState<string | null>(null);
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
+  
+  // Edit profile form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    companyName: '',
+    contactPerson: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: '',
+    },
+  });
+  
+  // Profile image state
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('/avatar.png');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!dealerId) return;
@@ -68,6 +94,28 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
         setLoading(false);
       });
   }, [dealerId]);
+
+  // Sync form data when dealer is loaded or modal opens
+  useEffect(() => {
+    if (dealer && editModalOpen) {
+      setFormData({
+        name: dealer.fullName || '',
+        email: dealer.email || '',
+        phone: dealer.phone || '',
+        companyName: dealer.companyName || '',
+        contactPerson: dealer.contactPerson || '',
+        address: {
+          street: dealer.address?.street || '',
+          city: dealer.address?.city || '',
+          state: dealer.address?.state || '',
+          zipCode: dealer.address?.zipCode || '',
+          country: dealer.address?.country || '',
+        },
+      });
+      setPreviewUrl(dealer.profileImage || '/avatar.png');
+      setProfileImage(null);
+    }
+  }, [dealer, editModalOpen]);
 
   const handleOpenMessageDialog = () => {
     setOpenMessageDialog(true);
@@ -89,6 +137,109 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
 
   const handleCloseChatModal = () => {
     setChatModalOpen(false);
+  };
+
+  const handleOpenEditModal = () => {
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setProfileImage(null);
+    if (dealer) {
+      setPreviewUrl(dealer.profileImage || '/avatar.png');
+    }
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    
+    if (name.startsWith('address.')) {
+      const key = name.split('.')[1];
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [key]: value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be under 5MB');
+      return;
+    }
+    setProfileImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const handleSaveProfile = async () => {
+    if (!formData.name.trim()) {
+      toast.error('Name cannot be empty');
+      return;
+    }
+
+    if (!dealer || !user) {
+      toast.error('Dealer or user information not available');
+      return;
+    }
+
+    const dealerUpdatePayload = {
+      _id: dealer._id,
+      fullName: formData.name,
+      email: formData.email,
+      phone: formData.phone || '',
+      companyName: formData.companyName || '',
+      contactPerson: formData.contactPerson || '',
+      address: {
+        street: formData.address.street || '',
+        city: formData.address.city || '',
+        state: formData.address.state || '',
+        zipCode: formData.address.zipCode || '',
+        country: formData.address.country || '',
+      },
+    };
+
+    const imagePayload = new FormData();
+    if (profileImage) {
+      imagePayload.append('profileImage', profileImage);
+    }
+
+    try {
+      setIsSaving(true);
+
+      // Update dealer details
+      await updateDealer({ data: dealerUpdatePayload as unknown as Record<string, unknown>, user });
+
+      // Update profile image if selected
+      if (profileImage) {
+        await updateUser(imagePayload);
+      }
+
+      // Refresh dealer data
+      const res = await getDealerById(dealerId);
+      setDealer(res.data);
+
+      toast.success('Profile updated successfully!');
+      handleCloseEditModal();
+    } catch (error: unknown) {
+      const errMsg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to update profile.';
+      toast.error(errMsg);
+      if (dealer) {
+        setPreviewUrl(dealer.profileImage || '/avatar.png');
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (loading)
@@ -123,15 +274,28 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
           }
           subheader={`Member since: ${dealer.createdAt ? new Date(dealer.createdAt).toLocaleDateString() : 'N/A'}`}
           action={
-            dealer.isVerified ? (
-              <Chip
-                icon={<VerifiedUser />}
-                label="Verified"
-                color="success"
-                variant="outlined"
-                sx={{ mt: 2, mr: 2 }}
-              />
-            ) : null
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, mr: 2 }}>
+              {dealer.isVerified && (
+                <Chip
+                  icon={<VerifiedUser />}
+                  label="Verified"
+                  color="success"
+                  variant="outlined"
+                />
+              )}
+              {user && (user._id === dealer._id || user.role?.roleId === 'admin') && (
+                <Button
+                  disabled={user?.email === 'nextdeal@gmail.com'}
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Edit />}
+                  onClick={handleOpenEditModal}
+                  size="small"
+                >
+                  Edit Profile
+                </Button>
+              )}
+            </Box>
           }
         />
         <CardContent>
@@ -475,6 +639,285 @@ const DealerProfile = ({ dealerId }: DealerProfileProps) => {
         dealer={dealer}
         onClose={handleCloseChatModal}
       />
+
+      {/* Edit Profile Dialog */}
+      <Dialog
+        open={editModalOpen}
+        onClose={handleCloseEditModal}
+        fullWidth
+        maxWidth="md"
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            pb: 1.5,
+            fontWeight: 600,
+            fontSize: '1.125rem',
+            color: '#212529',
+            pt: 3,
+          }}
+        >
+          Edit Dealer Profile
+        </DialogTitle>
+        <DialogContent>
+          {/* Profile Image Section */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              mb: 3,
+            }}
+          >
+            <Avatar
+              src={previewUrl}
+              sx={{
+                width: 120,
+                height: 120,
+                mb: 2,
+                border: '3px solid #f0f0f0',
+              }}
+            />
+            <Button
+              variant="outlined"
+              onClick={() => fileInputRef.current?.click()}
+              size="small"
+              sx={{
+                textTransform: 'none',
+                borderRadius: 1,
+                px: 3,
+                py: 1,
+              }}
+            >
+              Change Picture
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleImageSelect}
+            />
+            <Typography
+              variant="caption"
+              sx={{ color: '#6c757d', display: 'block', mt: 1, fontSize: '0.75rem' }}
+            >
+              Maximum file size: 5MB
+            </Typography>
+          </Box>
+
+          <Divider sx={{ mb: 3 }} />
+
+          {/* Personal Information */}
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontWeight: 600,
+              color: '#212529',
+              mb: 2,
+              fontSize: '1rem',
+            }}
+          >
+            Personal Information
+          </Typography>
+
+          <Grid container spacing={2.5} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Full Name"
+                name="name"
+                value={formData.name}
+                onChange={handleFormChange}
+                size="small"
+                required
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleFormChange}
+                size="small"
+                required
+                InputProps={{ readOnly: true }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: '#f8f9fa',
+                  },
+                }}
+              />
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* Company Information */}
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontWeight: 600,
+              color: '#212529',
+              mb: 2,
+              fontSize: '1rem',
+            }}
+          >
+            Company Information
+          </Typography>
+
+          <Grid container spacing={2.5} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Company Name"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Contact Person"
+                name="contactPerson"
+                value={formData.contactPerson}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 3 }} />
+
+          {/* Address Information */}
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontWeight: 600,
+              color: '#212529',
+              mb: 2,
+              fontSize: '1rem',
+            }}
+          >
+            Address Information
+          </Typography>
+
+          <Grid container spacing={2.5}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Street"
+                name="address.street"
+                value={formData.address.street}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="City"
+                name="address.city"
+                value={formData.address.city}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="State"
+                name="address.state"
+                value={formData.address.state}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Zip Code"
+                name="address.zipCode"
+                value={formData.address.zipCode}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Country"
+                name="address.country"
+                value={formData.address.country}
+                onChange={handleFormChange}
+                size="small"
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 2 }}>
+          <Button
+            onClick={handleCloseEditModal}
+            sx={{
+              textTransform: 'none',
+              borderRadius: 1,
+              px: 3,
+              py: 1,
+              fontSize: '0.875rem',
+              color: '#6c757d',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSaveProfile}
+            disabled={isSaving}
+            sx={{
+              bgcolor: '#c8a45e',
+              color: 'white',
+              '&:hover': { bgcolor: '#b89049' },
+              textTransform: 'none',
+              borderRadius: 1,
+              px: 3,
+              py: 1,
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              '&:disabled': {
+                bgcolor: '#c8a45e',
+                opacity: 0.6,
+              },
+            }}
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -654,6 +654,7 @@ const ProfilePage: React.FC = () => {
               }}
             >
               <Button
+                disabled={user?.email === 'nextdeal@gmail.com' || isLoading}
                 variant="outlined"
                 onClick={() => setIsPasswordDialogOpen(true)}
                 sx={{
@@ -675,9 +676,9 @@ const ProfilePage: React.FC = () => {
               </Button>
 
               <Button
+                disabled={user?.email === 'nextdeal@gmail.com' || isLoading}
                 variant="contained"
                 onClick={handleSaveChanges}
-                disabled={isLoading}
                 sx={{
                   bgcolor: '#c8a45e',
                   color: 'white',
@@ -706,7 +707,13 @@ const ProfilePage: React.FC = () => {
       {/* Password Change Dialog */}
       <Dialog
         open={isPasswordDialogOpen}
-        onClose={() => setIsPasswordDialogOpen(false)}
+        onClose={() => {
+          if (user?.email === 'asfaqurrahman055@gmail.com') {
+            toast.error('You are not authorized to change password');
+            return;
+          }
+          setIsPasswordDialogOpen(false);
+        }}
         fullWidth
         maxWidth="sm"
         PaperProps={{
@@ -723,6 +730,7 @@ const ProfilePage: React.FC = () => {
             color: '#212529',
             pt: 3,
           }}
+          
         >
           Change Password
         </DialogTitle>

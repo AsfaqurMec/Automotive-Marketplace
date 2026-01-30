@@ -8,6 +8,7 @@ import CustomButton from './CustomButton';
 import { useTranslation } from 'react-i18next';
 import { Vehicle } from '@/types';
 import Price from './Price';
+import Email from '@mui/icons-material/Email';
 
 const CarListing = ({ car }: { car: Vehicle }) => {
   const { t } = useTranslation();
@@ -103,7 +104,7 @@ const CarListing = ({ car }: { car: Vehicle }) => {
                 <Paper sx={{ p: 1, backgroundColor: '#FAFAFA' }}>
                   <Typography variant="body2" color="text.primary">
                     {t('productCode')}:{' '}
-                    <strong style={{ color: '#D4A017' }}>A07792</strong>
+                    <strong style={{ color: '#D4A017' }}>{car?.vinNumber}</strong>
                   </Typography>
                 </Paper>
               </Box>
@@ -148,7 +149,7 @@ const CarListing = ({ car }: { car: Vehicle }) => {
 
             {/* Price */}
             <Typography
-              variant="h4"
+              variant="h3"
               fontWeight="bold"
               color="primary"
               mt={3}
@@ -160,13 +161,13 @@ const CarListing = ({ car }: { car: Vehicle }) => {
             {/* Buttons */}
             <Box
               display="flex"
-              flexDirection={{ xs: 'column', sm: 'row' }}
+              flexDirection={{ xs: 'column', sm: 'column' }}
               alignItems={{ xs: 'center', md: 'end' }}
               justifyContent={{ xs: 'center', md: 'end' }}
               gap={2}
               mt={2}
             >
-              <CustomButton
+              {/* <CustomButton
                 fullWidth
                 onClick={() => {}}
                 etcStyle={{
@@ -177,14 +178,21 @@ const CarListing = ({ car }: { car: Vehicle }) => {
                 }}
               >
                 {t('tradeIn')}
-              </CustomButton>
+              </CustomButton> */}
 
               <CustomButton
                 fullWidth
                 onClick={() => {}} // Added required onClick prop
-                etcStyle={{ minWidth: 262, fontSize: '18px' }}
+                etcStyle={{ minWidth: 220, fontSize: '18px' }}
               >
-                <PhoneIcon sx={{ mr: 1 }} /> {t('call')}: +972-533-9975
+                <PhoneIcon sx={{ mr: 1 }} /> {t('call')}: {car?.contactInfo?.phone || '01956230269'}
+              </CustomButton>
+              <CustomButton
+                fullWidth
+                onClick={() => {}} // Added required onClick prop
+                etcStyle={{ minWidth: 220, fontSize: '18px' }}
+              >
+                <Email sx={{ mr: 1 }} /> {t('email')}:  {car?.contactInfo?.email || 'dealer@nextdeal.com'}
               </CustomButton>
             </Box>
           </CardContent>

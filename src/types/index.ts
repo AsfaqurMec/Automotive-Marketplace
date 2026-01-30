@@ -158,6 +158,11 @@ export interface Vehicle {
     country: string;
     state?: string;
   };
+  contactInfo?: {
+    phone: string;
+    email: string;
+    name: string;
+  };
   description?: string;
   features?: string[];
   createdAt?: string;

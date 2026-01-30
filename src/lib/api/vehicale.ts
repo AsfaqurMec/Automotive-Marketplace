@@ -39,6 +39,7 @@ export const vehicaleApi = {
   },
 
   createVehicale: async (data: FormData, user: User) => {
+   // console.log('createVehicale', data);
      authorize(user, 'car', 'create');
      const config = {
       headers: {
