@@ -1209,6 +1209,7 @@ const AddVehicleForm: React.FC = () => {
             sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
           >
             <Button
+              disabled={user?.email === 'nextdeal@gmail.com'}
               sx={{ minWidth: '40%' }}
               type="submit"
               variant="contained"

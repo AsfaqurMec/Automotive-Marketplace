@@ -343,7 +343,7 @@ const EditSparePartModal: React.FC<{ open: boolean, onClose: () => void, initial
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" color="primary">
+          <Button disabled={user?.email === 'nextdeal@gmail.com'} type="submit" variant="contained" color="primary">
                         Update
           </Button>
         </DialogActions>

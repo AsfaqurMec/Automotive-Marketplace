@@ -565,6 +565,7 @@ const InventoryComponent: React.FC = () => {
     <Box sx={{ m: { xs: 0, md: 2 } }}>
       <Box sx={{}}>
         <Button
+          disabled={user?.email === 'nextdeal@gmail.com'}
           variant="outlined"
           sx={{ ...buttonStyle, my: 2 }}
           onClick={() => route.push('/admin/add-vehicle')}
@@ -867,12 +868,13 @@ const InventoryComponent: React.FC = () => {
                               </MenuItem>
 
                               <MenuItem
+                              disabled={user?.email === 'nextdeal@gmail.com'}
                                 onClick={() =>
                                   handleDeleteClick(item?._id)
                                 }
                               >
                                 <ListItemIcon>
-                                  <DeleteIcon color="error" />
+                                  <DeleteIcon  color="error" />
                                 </ListItemIcon>
                                 <ListItemText
                                   sx={{ color: 'error.main' }}
